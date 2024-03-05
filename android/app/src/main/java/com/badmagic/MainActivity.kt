@@ -1,5 +1,6 @@
 package com.badmagic
 
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -19,4 +20,10 @@ class MainActivity : ReactActivity() {
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+  // Needed for `react-native-screens`
+  // https://reactnavigation.org/docs/getting-started/#installing-dependencies-into-a-bare-react-native-project
+  override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(null)
+  }
 }

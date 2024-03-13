@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import React, {
   Dispatch,
   SetStateAction,
@@ -7,10 +8,9 @@ import React, {
 } from "react";
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
-import { AuthenticatedStackScreenProps } from "../AuthenticatedStackNavigator";
-import { Param, routeToUri, workspace } from "../../utils/badmagic";
 import { ApiQueryKey } from "../../providers/QueryClientProvider";
-import { useQuery } from "@tanstack/react-query";
+import { Param, routeToUri, workspace } from "../../utils/badmagic";
+import { AuthenticatedStackScreenProps } from "../AuthenticatedStackNavigator";
 
 type Params = Record<string, string>;
 
@@ -109,7 +109,7 @@ export function EndpointScreen({
 }
 
 function ParamField({
-  param: { name, placeholder, description, options },
+  param: { name, placeholder, description },
   params,
   setParams,
 }: {

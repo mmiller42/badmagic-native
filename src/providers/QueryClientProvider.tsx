@@ -1,22 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import {
-  QueryClient,
-  QueryFunction,
-  QueryFunctionContext,
   focusManager,
   onlineManager,
+  QueryClient,
+  QueryFunctionContext,
 } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import React, { ReactNode, useEffect, useState } from "react";
-import { authenticated } from "../utils/axios";
-import { routeToUri } from "../utils/badmagic";
-import { isAxiosError } from "axios";
 import { AppState } from "react-native";
-import { authController } from "../controllers/AuthController";
 
 import pkg from "../../package.json";
+import { authController } from "../controllers/AuthController";
+import { authenticated } from "../utils/axios";
+import { routeToUri } from "../utils/badmagic";
 
 export type ApiQueryKey<
   TRoute extends string = string,

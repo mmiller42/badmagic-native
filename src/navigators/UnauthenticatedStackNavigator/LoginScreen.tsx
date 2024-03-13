@@ -1,11 +1,9 @@
-import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { Button, TextInput, View } from "react-native";
 
 import { authenticate } from "../../api/auth";
 import { authController } from "../../controllers/AuthController";
 import { credentialsController } from "../../controllers/CredentialsController";
-import { UnauthenticatedStackScreenProps } from "../UnauthenticatedStackNavigator";
 
 export function LoginScreen() {
   const [email, setEmail] = useState("");

@@ -1,3 +1,5 @@
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useMemo, useState } from "react";
 import {
   Button,
@@ -10,15 +12,10 @@ import {
 } from "react-native";
 import { resetInternetCredentials } from "react-native-keychain";
 
-import {
-  AuthenticatedStackParamsList,
-  AuthenticatedStackScreenProps,
-} from "../AuthenticatedStackNavigator";
-import { Route, workspace } from "../../utils/badmagic";
-import { Pill } from "../../components/Pill";
 import { Checkbox } from "../../components/Checkbox";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Pill } from "../../components/Pill";
+import { Route, workspace } from "../../utils/badmagic";
+import { AuthenticatedStackParamsList } from "../AuthenticatedStackNavigator";
 
 const allParams = new Set();
 workspace.routes.forEach((route) => {
@@ -28,9 +25,7 @@ console.log(allParams);
 
 const activeRoutes = workspace.routes.filter((route) => !route.deprecated);
 
-export function EndpointsScreen({
-  navigation,
-}: AuthenticatedStackScreenProps<"Endpoints">) {
+export function EndpointsScreen() {
   const [search, setSearch] = useState("");
   const [deprecated, setDeprecated] = useState(false);
 

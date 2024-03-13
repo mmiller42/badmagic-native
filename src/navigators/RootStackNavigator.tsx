@@ -1,21 +1,9 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
 
 import { authController } from "../controllers/AuthController";
 import { AuthenticatedStackNavigator } from "./AuthenticatedStackNavigator";
-import {
-  EndpointsParamsList,
-  EndpointsScreen,
-} from "./AuthenticatedStackNavigator/EndpointsScreen";
 import { UnauthenticatedStackNavigator } from "./UnauthenticatedStackNavigator";
-import {
-  LoginParamsList,
-  LoginScreen,
-} from "./UnauthenticatedStackNavigator/LoginScreen";
 
 export type RootStackParamsList = {
   AuthenticatedStack: undefined;

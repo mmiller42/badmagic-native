@@ -5,9 +5,9 @@ import {
 } from "@react-navigation/native-stack";
 import React from "react";
 
+import { QueryClientProvider } from "../providers/QueryClientProvider";
 import { EndpointScreen } from "./AuthenticatedStackNavigator/EndpointScreen";
 import { EndpointsScreen } from "./AuthenticatedStackNavigator/EndpointsScreen";
-import { QueryClientProvider } from "../providers/QueryClientProvider";
 
 export type AuthenticatedStackParamsList = {
   Endpoints: undefined;

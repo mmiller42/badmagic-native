@@ -1,8 +1,9 @@
-import { jwtDecode } from "jwt-decode";
-import { axios } from "../utils/axios";
 import { isAxiosError } from "axios";
+import { jwtDecode } from "jwt-decode";
 
-type TokensResponse = {
+import { unauthenticated } from "../utils/axios";
+
+type TokensApiResponse = {
   data: {
     access_token: string;
     refresh_token: string;
@@ -11,21 +12,21 @@ type TokensResponse = {
   };
 };
 
-type TwoFactorResponse = {
+type TwoFactorApiResponse = {
   data: {
     tfa_api_token: string;
   };
 };
 
 function isTokensResponse(
-  response: TokensResponse | TwoFactorResponse
-): response is TokensResponse {
+  response: TokensApiResponse | TwoFactorApiResponse
+): response is TokensApiResponse {
   return "access_token" in response.data;
 }
 
 function isTwoFactorResponse(
-  response: TokensResponse | TwoFactorResponse
-): response is TwoFactorResponse {
+  response: TokensApiResponse | TwoFactorApiResponse
+): response is TwoFactorApiResponse {
   return "tfa_api_token" in response.data;
 }
 
@@ -46,7 +47,7 @@ type TokenPayload<TType extends "access" | "refresh" = "access" | "refresh"> = {
   nbf: number;
 };
 
-export type Session = {
+export type TokensResponse = {
   user_id: number;
   access: {
     token: string;
@@ -58,7 +59,7 @@ export type Session = {
   };
 };
 
-function formatSession(data: TokensResponse): Session {
+function formatTokensResponse(data: TokensApiResponse): TokensResponse {
   return {
     user_id: data.data.user_id,
     access: {
@@ -107,18 +108,17 @@ export class SessionExpiredError extends Error {}
 export async function authenticate({
   email,
   password,
-}: AuthenticateRequest): Promise<Session> {
+}: AuthenticateRequest): Promise<TokensResponse> {
   try {
-    const { data } = await axios.post<TokensResponse | TwoFactorResponse>(
-      "/v1/sessions",
-      { email, password }
-    );
+    const { data } = await unauthenticated.post<
+      TokensApiResponse | TwoFactorApiResponse
+    >("/v1/sessions", { email, password });
 
     if (isTwoFactorResponse(data)) {
       throw new TwoFactorError(data.data.tfa_api_token);
     }
 
-    return formatSession(data);
+    return formatTokensResponse(data);
   } catch (e) {
     handleAuthenticateError(e);
   }
@@ -132,14 +132,17 @@ export type TwoFactorAuthenticateRequest = {
 export async function twoFactorAuthenticate({
   tfa_api_token,
   token,
-}: TwoFactorAuthenticateRequest): Promise<Session> {
+}: TwoFactorAuthenticateRequest): Promise<TokensResponse> {
   try {
-    const { data } = await axios.post<TokensResponse>("/v1/sessions", {
-      tfa_api_token,
-      token,
-    });
+    const { data } = await unauthenticated.post<TokensApiResponse>(
+      "/v1/sessions",
+      {
+        tfa_api_token,
+        token,
+      }
+    );
 
-    return formatSession(data);
+    return formatTokensResponse(data);
   } catch (e) {
     handleAuthenticateError(e);
   }
@@ -149,11 +152,11 @@ export type RefreshRequest = {
   token: string;
 };
 
-export async function refreshCredentials({
+export async function refreshTokens({
   token,
-}: RefreshRequest): Promise<Session> {
+}: RefreshRequest): Promise<TokensResponse> {
   try {
-    const { data } = await axios.post<TokensResponse>(
+    const { data } = await unauthenticated.post<TokensApiResponse>(
       "/v1/tokens",
       {},
       {
@@ -161,7 +164,7 @@ export async function refreshCredentials({
       }
     );
 
-    return formatSession(data);
+    return formatTokensResponse(data);
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 401) {
       throw new SessionExpiredError();

@@ -1,0 +1,721 @@
+{
+  "id": "res",
+  "name": "Resident",
+  "config": {
+    "baseUrl": "http://localhost:4000",
+    "loginPath": "/api/v1/sessions",
+    "refreshPath": "/api/v1/tokens",
+    "pathToTokens": "data.data",
+    "authStrategies": [
+      "bearer"
+    ],
+    "formFields": [
+      "email",
+      "password"
+    ]
+  },
+  "routes": [
+    {
+      "name": "Fetch Current User Profile",
+      "path": "/api/v1/users/me",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Current User Profile V2",
+      "path": "/api/v2/users/me",
+      "documentation": "# Resident API Get User Profile v2\n\n## Endpoint\n\n`GET /api/v2/users/me`\n\n## Pagination\n\nThis endpoint does not support pagination.\n\n## Parameters\n\nThis endpoint has no parameters.\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"email\": string,\n  \"first_name\": string,\n  \"id\": number,\n  \"last_name\": string,\n  \"mobile_phone\": string,\n  \"tos_accepted_at\": datetime | null,\n  \"user_needs_to_accept_tos\": boolean\n}\n```\n\n&nbsp;\n\nExample Response:\n\n```json\n{\n  \"email\": \"test@test.com\",\n  \"first_name\": \"John\",\n  \"id\": 1,\n  \"last_name\": \"Doe\",\n  \"mobile_phone\": \"+14805555555\",\n  \"tos_accepted_at\": null,\n  \"user_needs_to_accept_tos\": false\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Fetch User Profile by ID",
+      "path": "/api/v1/users/:user_id",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch User Profile by ID V2",
+      "path": "/api/v2/users/:user_id"
+    },
+    {
+      "name": "Fetch Unit",
+      "path": "/api/v1/units/:unit_id",
+      "deprecated": true
+    },
+    {
+      "name": "List Units",
+      "path": "/api/v1/units",
+      "qsParams": [
+        {
+          "name": "limit"
+        },
+        {
+          "name": "page"
+        }
+      ],
+      "documentation": "# Units\n\n## Endpoint\n\n`GET /api/v1/units`\n\n## Pagination\n\n- `limit`: number, optional, example: (25) - the maximum number of records returned, may impact the total_pages value in the response so requests trying to fetch pages in series must use the same limit value.\n\n&nbsp;\n\n```text\n   If an invalid limit is provided, such as -1, a default limit of 1000 will be applied instead.\n   If no limit is provided, a default of limit of 100 is applied.\n```\n\n&nbsp;\n\n- `page`: number, optional, example: (1) - the page to fetch. A client should not pass a page value greater than 1 without first getting a total_pages value indicating that this page is in a valid range.\n\n&nbsp;\n\n```text\n    If an invalid page is provided, such as -1, a 422 error will be returned.\n    If no page is provided, a default of page of 1 is applied.\n```\n\n#### Example:\n\n`/api/v1/units?limit=10&page=2`\n\n```json\n{\n  \"records\": [],\n  \"total_records\": 1000,\n  \"total_pages\": 100,\n  \"current_page\": 2\n}\n```\n\n## Parameters\n\n- `access_control_device_provider_id`: number, optional\n- `available`: string, optional\n- `building`: string, optional\n- `buildings`: string, optional\n- `can_be_toured`: string, optional\n- `cities`: string, optional\n- `countries`: string, optional\n- `country`: string, optional\n- `display_home_online`: string, optional\n- `excluded_unit_ids`: string, optional\n- `floor`: string, optional\n- `floors`: string, optional\n- `group_id`: number, optional\n- `group_ids`: string, optional\n- `has_access_control_device`: boolean, optional\n- `has_any_lock`: boolean, optional\n- `has_hub`: boolean, optional\n- `has_primary_lock`: boolean, optional\n- `hub_online`: string, optional\n- `id`: number, optional\n- `ids`: string, optional\n- `is_occupied`: string, optional\n- `limit`: number, optional, example: (25)\n- `marketing_name`: string, optional\n- `marketing_names`: string, optional\n- `organization_id`: number, optional\n- `organization_ids`: string, optional\n- `page`: number, optional, example: (1)\n- `property_code`: string, optional\n- `qualifies_for_touring`: boolean, optional\n- `remote_id`: string, optional\n- `states`: string, optional\n- `temperature_scale`: string, optional\n- `unit_status`: string, optional\n- `zips`: string, optional\n\nSample path with query string: `GET /api/v1/units?limit=25&page=1`\n\n## Responses\n\n### 200 Response\n\n```javascript\n  {\n    \"id\": number,\n    \"group_id\": number,\n    \"group\": {\n      \"id\": number,\n      \"uuid\": string,\n      \"organization_id\": number,\n      \"marketing_name\": string,\n      \"street_address_1\": string | null,\n      \"street_address_2\": string | null,\n      \"city\": string | null,\n      \"state\": string | null,\n      \"zip\": string | null,\n      \"country\": string,\n      \"timezone\": string | null,\n      \"rentcafe_id\": null,\n      \"parking_enabled\": boolean,\n      \"sync_interval\": number | null,\n      \"temperature_scale\": string | null,\n      \"property_code\": string | null,\n      \"store_url\": string | null,\n      \"wifi_provider_url\": string | null,\n      \"group_white_label_config\": { logo_url: string | null } | null,\n      \"community_wifi_enabled\": boolean,\n      \"compound_psk_enabled\": boolean,\n      \"has_intercom\": boolean,\n      \"integrations\": {\n        \"entrata_enabled\": boolean\n      },\n      \"managed_wifi\": {\n        \"wifi_enabled\": boolean,\n        \"marketing_enabled\": boolean | null,\n        \"download_speed\": string | null,\n        \"compound_psk_enabled\": boolean | null,\n        \"wifi_monthly_cost\": string | null,\n        \"enable_non_anonymized_resident_email\": boolean | null,\n        \"enable_elp_resident_wifi_experience\": boolean | null\n      },\n    },\n    \"image_url\": string | null,\n    \"marketing_name\": string,\n    \"ring_enabled\": boolean,\n    \"temperature_scale\": string,\n    \"timezone\": string,\n    \"hub_id\": number | null,\n    \"has_hub\": boolean,\n    \"portal_only\": boolean, // a unit with no community access and no devices\n    \"parking_enabled\": boolean, // parking is enabled for this property\n    \"livly_enabled\": boolean, // livly is enabled for this property\n    \"service_requests_enabled\": boolean, // service requests is enabled for this property\n    \"broadcast_messages_enabled\": boolean, // broadcast messages is enabled for this property\n    \"security_system_enabled\": boolean, // a security system is enabled for this property\n    \"hub\": {\n      \"id\": number,\n      \"serial\": string,\n      \"online\": boolean,\n      \"type\": string,\n      \"firmware\": string | null,\n      \"unit_id\": number,\n      \"timezone\": string | null,\n      \"wifi_supported\": boolean,\n      \"connection\": string | null,\n      \"hub_account_id\": number | null\n    } | null,\n    \"unit_code\": string | null,\n    \"building\": string | null,\n    \"floor\": string | null,\n    \"street_address_1\": string | null,\n    \"street_address_2\": string | null,\n    \"city\": string | null,\n    \"state\": string | null,\n    \"country\": string | null,\n    \"zip\": string | null\n  }[]\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n### 404 Response\n\nNot Found\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"not_found\",\n      \"description\": \"The resource was not found.\"\n    }\n  ]\n}\n```\n",
+      "deprecated": true
+    },
+    {
+      "name": "List Units",
+      "path": "/api/v2/units",
+      "qsParams": [
+        {
+          "name": "limit"
+        },
+        {
+          "name": "page"
+        }
+      ],
+      "documentation": "# Units\n\n## Endpoint\n\n`GET /api/v2/units`\n\nSample path with query string: `GET /api/v1/units?limit=25&page=1`\n\n## Responses\n\n### 200 Response\n\n```javascript\n  {\n    \"id\": number,\n    \"group_id\": number,\n    \"group\": {\n      \"id\": number,\n      \"uuid\": string,\n      \"organization_id\": number,\n      \"marketing_name\": string,\n      \"street_address_1\": string | null,\n      \"street_address_2\": string | null,\n      \"city\": string | null,\n      \"state\": string | null,\n      \"zip\": string | null,\n      \"country\": string,\n      \"timezone\": string | null,\n      \"parking_enabled\": boolean,\n      \"sync_interval\": number | null,\n      \"temperature_scale\": string | null,\n      \"property_code\": string | null,\n      \"store_url\": string | null,\n      \"group_white_label_config\": { logo_url: string | null } | null,\n      \"community_wifi_enabled\": boolean,\n      \"compound_psk_enabled\": boolean,\n      \"has_intercom\": boolean,\n    },\n    \"image_url\": string | null,\n    \"marketing_name\": string,\n    \"ring_enabled\": boolean,\n    \"temperature_scale\": string,\n    \"timezone\": string,\n    \"hub_id\": number | null,\n    \"has_hub\": boolean,\n    \"portal_only\": boolean, // a unit with no community access and no devices\n    \"parking_enabled\": boolean, // parking is enabled for this property\n    \"rent_pay_enabled\": boolean, // if rentpay is enabled for this property\n    \"rent_pay_url\": string, // the rentpay portal url\n    \"hub\": {\n      \"id\": number,\n      \"serial\": string,\n      \"online\": boolean,\n      \"type\": string,\n      \"firmware\": string | null,\n      \"unit_id\": number,\n      \"timezone\": string | null,\n      \"wifi_supported\": boolean,\n      \"connection\": string | null,\n      \"hub_account_id\": number | null,\n      \"has_community_wifi_credentials\": boolean,\n      \"connected_to_community_wifi\": boolean\n    } | null,\n    \"unit_code\": string | null,\n    \"building\": string | null,\n    \"floor\": string | null,\n    \"street_address_1\": string | null,\n    \"street_address_2\": string | null,\n    \"city\": string | null,\n    \"state\": string | null,\n    \"country\": string | null,\n    \"zip\": string | null\n  }[]\n```\n"
+    },
+    {
+      "name": "List Resident Integrations for Unit",
+      "path": "/api/v1/units/:unit_id/integrations",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Security System",
+      "path": "/api/v1/units/:unit_id/security-system",
+      "deprecated": true
+    },
+    {
+      "name": "List Security System Events",
+      "path": "/api/v1/units/:unit_id/security-system/events",
+      "qsParams": [
+        {
+          "name": "limit"
+        },
+        {
+          "name": "offset"
+        }
+      ]
+    },
+    {
+      "name": "List Rooms and Devices",
+      "path": "/api/v1/hubs/:hub_id/rooms",
+      "deprecated": true
+    },
+    {
+      "name": "List Rooms and Devices V2",
+      "path": "/api/v2/hubs/:hub_id/rooms",
+      "deprecated": true
+    },
+    {
+      "name": "List Rooms and Devices",
+      "path": "/api/v1/units/:unit_id/rooms",
+      "deprecated": true
+    },
+    {
+      "name": "List Rooms and Devices v2",
+      "path": "/api/v2/units/:unit_id/rooms",
+      "deprecated": true
+    },
+    {
+      "name": "v1 List Scenes (by hub)",
+      "path": "/api/v1/hubs/:hub_id/scenes",
+      "deprecated": true
+    },
+    {
+      "name": "v1 List Scenes (by unit)",
+      "path": "/api/v1/units/:unit_id/scenes",
+      "deprecated": true
+    },
+    {
+      "name": "v2 List Scenes (by unit)",
+      "path": "/api/v2/units/:unit_id/scenes",
+      "documentation": "# Unit Scenes\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/scenes`\n\n## Parameters\n\nNo parameters are passed to this endpoint\n\n### 200 Response\n\n```javascript\n{\n  total_records: number,\n  total_pages: number,\n  current_page: number,\n  records: [\n    {\n      id: number,\n      color: string,\n      name: string,\n      icon: string,\n      device_states: [\n        {\n          id: number,\n          attribute: string,\n          device_name: string | null,\n          device_id: number,\n          target_state: string,\n          device_type: string\n        }\n      ]\n    }\n  ]\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "v2 Fetch Scene (by unit)",
+      "path": "/api/v2/units/:unit_id/scenes/:scene_id",
+      "documentation": "# v2 Fetch Scene (by unit)\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/scenes/:scene_id`\n\n## Pagination\n\nThis endpoint does not support pagination.\n\n## Parameters\n\nNo parameters are passed to this endpoint.\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"id\": number,\n  \"color\": string,\n  \"name\": string,\n  \"icon\": string,\n  \"device_states\": [\n    {\n      \"id\": number,\n      \"attribute\": string,\n      \"device_name\": string | null,\n      \"device_id\": number,\n      \"target_state\": string,\n      \"device_type\": string\n    }\n  ]\n}\n```\n\n&nbsp;\n\nExample Response:\n\n```json\n{\n  \"id\": 1,\n  \"color\": \"#ec407a\",\n  \"name\": \"My Scene\",\n  \"icon\": \"home\",\n  \"device_states\": [\n    {\n      \"id\": 1,\n      \"attribute\": \"locked\",\n      \"device_name\": \"Main Lock\",\n      \"device_id\": 1,\n      \"target_state\": \"true\",\n      \"device_type\": \"entry_control\"\n    }\n  ]\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials.\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Fetch Scene",
+      "path": "/api/v1/hubs/:hub_id/scenes/:scene_id",
+      "deprecated": true
+    },
+    {
+      "name": "List Access Codes",
+      "path": "/api/v1/hubs/:hub_id/codes",
+      "deprecated": true
+    },
+    {
+      "name": "List All Access Codes",
+      "path": "/api/v2/units/:unit_id/access-codes",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Unit Access (Pin, Fob, Mobile)",
+      "path": "/api/v1/units/:unit_id/access",
+      "documentation": "# Unit Access\n\n## Endpoint\n\n`GET /api/v1/units/:unit_id/access`\n\n## Parameters\n\nNo parameters are passed to this endpoint\n\n## Responses\n\n### 200 Response\n\n@type access_code_status ::\n:not_yet_added\n| :pending_add\n| :add_failure\n| :add_success\n| :pending_replace\n| :replace_failure\n| :pending_remove\n| :remove_failure\n| :remove_success\n| :deleted_pending_remove\n| :deleted_remove_failure\n\n```javascript\n{\n  \"config\": {\n    \"group_id\": 32,\n    \"max_building_codes\": 3,\n    \"max_building_window_hours\": 2,\n    \"max_permanent_codes\": null,\n    \"max_recurring_codes\": 5,\n    \"max_recurring_days_per_week\": 5,\n    \"max_recurring_window_hours\": 2,\n    \"max_temporary_codes\": 5,\n    \"max_temporary_window_hours\": 48,\n    \"allowed_pin_code_lengths\": [4,6],\n    \"residents_can_specify_codes\": false,\n    \"guest_phone_number_required\": false\n  },\n  \"delivery\": [\n    {\n      \"activation_type\": \"temporary\",\n      \"capabilities\": [],\n      \"code\": \"599233#\",\n      \"devices\": [],\n      \"end_at\": \"2020-11-25T17:29:49Z\",\n      \"id\": 18,\n      \"locations\": [\"property\"],\n      \"start_at\": \"2020-11-25T15:29:49Z\"\n    }\n  ],\n  \"guests\": [\n    {\n      \"access\": {\n        \"fobs\": [],\n        \"mobile\": [],\n        \"pin_codes\": [\n          {\n            \"activation_type\": \"permanent\",\n            \"capabilities\": [\"revoke\"],\n            \"code\": \"142789\",\n            \"devices\": [\n              {\n                \"id\": 61,\n                \"name\": \"Virtual Door Lock\",\n                \"primary_lock\": true,\n                \"status\": \"add_success\"\n              }\n            ],\n            \"id\": 3,\n            \"recurring_end_time\": null,\n            \"recurring_repeat_on\": null,\n            \"recurring_start_time\": null,\n            \"temporary_end_at\": null,\n            \"temporary_start_at\": null\n          },\n          {\n            \"activation_type\": \"temporary\",\n            \"capabilities\": [],\n            \"code\": \"142789#\",\n            \"devices\": [],\n            \"end_at\": null,\n            \"id\": 11,\n            \"locations\": [\"property\"],\n            \"start_at\": \"2020-11-23T17:22:09Z\"\n          }\n        ]\n      },\n      \"created_by_user_id\": 582,\n      \"email\": \"guest-1@smartrent.com\",\n      \"first_name\": \"Guest\",\n      \"last_name\": \"1\",\n      \"phone\": null\n    }\n  ],\n  \"resident\": {\n    \"fobs\": [\n      {\n        \"activation_type\": \"permanent\",\n        \"capabilities\": [],\n        \"devices\": [],\n        \"id\": 12,\n        \"locations\": [\"property\"]\n      }\n    ],\n    \"mobile\": [\n      {\n        \"activation_type\": \"permanent\",\n        \"credential\": {\n          \"end_at\": null,\n          \"id\": 4142,\n          \"pass\": {\n            \"credential\": {\n              \"access_payload\": {\n                \"access_token\": \"\",\n                \"device_serial\": \"M7D7288C00\",\n                \"lock_id\": \"CE54C7D251EA72D998B07D3B33732A12\",\n                \"lock_name\": \"Front Door\"\n              }\n            },\n            \"credential_status\": \"active\",\n            \"credential_type\": \"yale\"\n          },\n          \"start_at\": null,\n          \"status\": \"active_key\",\n          \"type\": \"mobile\"\n        },\n        \"id\": 1214,\n        \"locations\": [\n          \"unit\"\n        ],\n        \"model\": \"yale\",\n        \"serial\": \"800\",\n        \"battery_level\": null | 0.9,\n        \"battery_last_updated_at\": \"2023-06-08T16:54:01.000000Z\"\n      }\n    ],\n    \"pin_codes\": [\n      {\n        \"actions\": {\n          \"replace\": \"/v1/units/2422/resident-access-code/replace\"\n        },\n        \"activation_type\": \"permanent\",\n        \"capabilities\": [\"replace\"],\n        \"code\": \"535182\",\n        \"devices\": [\n          {\n            \"id\": 61,\n            \"name\": \"Virtual Door Lock\",\n            \"primary_lock\": true,\n            \"serial\": \"virtual-c89e70f2-ef17-4e55-a705-22c089d29872\",\n            \"status\": \"add_success\"\n          }\n        ],\n        \"id\": 7,\n        \"locations\": [\"unit\"],\n        \"protocol\": \"zwave\"\n      },\n      {\n        \"actions\": {\n          \"replace\": \"/v1/units/2422/access-control-device/75/replace\"\n        },\n        \"activation_type\": \"permanent\",\n        \"capabilities\": [\"replace\"],\n        \"code\": \"123384\",\n        \"devices\": [\n          {\n            \"id\": 75,\n            \"model\": \"yale\",\n            \"name\": \"Front Door (800)\",\n            \"primary_lock\": false,\n            \"serial\": \"800\",\n            \"status\": null,\n            \"battery_level\": null | 0.9,\n            \"battery_last_updated_at\": \"2023-06-08T16:54:01.000000Z\"\n          }\n        ],\n        \"id\": 1212,\n        \"locations\": [\n          \"unit\"\n        ],\n        \"protocol\": \"ble\",\n        \"status\": \"pending_add\"\n      },\n      {\n        \"activation_type\": \"permanent\",\n        \"capabilities\": [],\n        \"code\": \"417924#\",\n        \"devices\": [],\n        \"id\": 8,\n        \"locations\": [\"property\"]\n      },\n    ]\n  }\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\nA response with an HTTP status code of 404 with an error indicating the resource could not be found.\n\n```json\n{\n  \"errors\": [\n    {\n      \"field\": null,\n      \"description\": \"You do not have permission to view this page\",\n      \"code\": \"forbidden\"\n    }\n  ]\n}\n```\n\n### 404 Response\n\nNot Found\n\nA response with an HTTP status code of 404 with an error indicating the resource could not be found.\n\n```json\n{\n  \"errors\": [\n    {\n      \"field\": null,\n      \"description\": \"The resource was not found\",\n      \"code\": \"not_found\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "List Building Access Codes",
+      "path": "/api/v2/units/:unit_id/building-access-codes",
+      "deprecated": true,
+      "documentation": "# List Building Access Codes\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/building-access-codes`\n\n## Pagination\n\nThis endpoint does not support pagination.\n\n## Parameters\n\nNo parameters are passed to this endpoint.\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"code\": string,\n  \"end_at\": datetime,\n  \"id\": number,\n  \"start_at\": datetime,\n  \"type\": string\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\nA response with an HTTP status code of 404 with an error indicating the resource could not be found.\n\n```json\n{\n  \"errors\": [\n    {\n      \"field\": null,\n      \"description\": \"You do not have permission to view this page\",\n      \"code\": \"forbidden\"\n    }\n  ]\n}\n```\n\n### 404 Response\n\nNot Found\n\nA response with an HTTP status code of 404 with an error indicating the resource could not be found.\n\n```json\n{\n  \"errors\": [\n    {\n      \"field\": null,\n      \"description\": \"The resource was not found\",\n      \"code\": \"not_found\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Fetch Property",
+      "path": "/api/v1/groups/:group_id",
+      "deprecated": true
+    },
+    {
+      "name": "Property - Resident Access Code Config",
+      "path": "/api/v1/groups/:group_id/resident-access-code-config",
+      "deprecated": true
+    },
+    {
+      "name": "Activity Log Search",
+      "path": "/api/v2/units/:unit_id/activity",
+      "qsParams": [
+        {
+          "name": "page"
+        },
+        {
+          "name": "limit"
+        },
+        {
+          "name": "sort"
+        },
+        {
+          "name": "dir"
+        },
+        {
+          "name": "lease_id"
+        },
+        {
+          "name": "device_id"
+        },
+        {
+          "name": "device_ids"
+        },
+        {
+          "name": "start"
+        },
+        {
+          "name": "end"
+        },
+        {
+          "label": "Category",
+          "name": "category",
+          "options": [
+            {
+              "label": "Devices",
+              "value": "devices"
+            },
+            {
+              "label": "Security",
+              "value": "security"
+            }
+          ]
+        }
+      ],
+      "documentation": "\n# Activity 2.0\n\n## Endpoint\n  - /api/v2/units/:unit_id/activity\n\n## Parameters\n  - `lease_id`: integer, optional\n  - `device_id`: integer, optional\n  - `confirmed_at`: datetime, optional\n  - `category`: string, optional\n    - One of: `devices`, `security`\n  - `start`: datetime, optional\n  - `end`: datetime, optional\n  - `page`: integer, optional\n\n## Response\n```json\n{\n  \"records\": [\n    {\n      \"category\": string,\n      \"caused_by\": string | null,\n      \"description\": string,\n      \"device\": string,\n      \"event\": string,\n      \"event_raw\": string,\n      \"id\": uuid,\n      \"inserted_at\": datetime,\n      \"subject\": string,\n      \"unit\": {\n        \"marketing_name\": string\n      }\n    }\n  ],\n  \"total_pages\": 2,\n  \"total_records\": 2\n}\n```\n\n## Errors\n```\n{\n  \"errors\": [\n    {\n      \"code\": string,\n      \"description\": string\n    }\n  ]\n}\n```\n\n## Dev Notes\n- Pagination is pseudo pagination. There will always be a next page until there are no more records to return\n"
+    },
+    {
+      "name": "Activity Log Details",
+      "path": "/api/v2/units/:unit_id/activity/:activity_id",
+      "documentation": "\n# Activity 2.0\n\n## Endpoint\n  - /api/v2/units/:unit_id/activity/:activity_id\n\n## Response\n```json\n{\n  \"attributes\": [\n    {\n      \"confirmed_at\": datetime,\n      \"failed_at\": datetime,\n      \"name\": string,\n      \"state\": string\n    }\n  ]\n  \"category\": string,\n  \"caused_by\": string | null,\n  \"description\": string,\n  \"device\": string,\n  \"event\": string,\n  \"event_raw\": string,\n  \"id\": uuid,\n  \"inserted_at\": datetime,\n  \"subject\": string,\n  \"unit\": {\n    \"marketing_name\": string\n  }\n}\n```\n\n## Errors\n```\n{\n  \"errors\": [\n    {\n      \"code\": string,\n      \"description\": string\n    }\n  ]\n}\n```\n",
+      "deprecated": true
+    },
+    {
+      "name": "API Support",
+      "path": "/api/v1/api-support",
+      "qsParams": [
+        {
+          "name": "platform"
+        },
+        {
+          "name": "version"
+        }
+      ],
+      "deprecated": true
+    },
+    {
+      "name": "Get Communication Preferences",
+      "path": "/api/v2/communication-preferences"
+    },
+    {
+      "name": "Get Zendesk JWT Token for User",
+      "path": "/api/v1/zendesk/user-jwt-token",
+      "documentation": "# Zendesk - Get User JWT Token\n\n## Endpoint\n\n`GET /api/v1/zendesk/user-jwt-token`\n\n## Responses\n\n### 200 Response\n\n```json\n{\n  \"zendesk_user_jwt_token\": string,\n}\n```\n\n### 422 Response\n\nThe authenticated resident does not have an associated user record.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"no_user_associated\",\n      \"description\": \"No user is associated with the given resident.\",\n      \"field\": null\n    }\n  ]\n}\n```\n\n### 401 Response\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Mobile App Version Information",
+      "path": "/api/v1/app-versions"
+    },
+    {
+      "name": "Get Unit Automations Pauses",
+      "path": "/api/v2/units/:unit_id/pause-automations"
+    },
+    {
+      "name": "Validate Invitation Token",
+      "path": "/api/v1/invitations/:token"
+    },
+    {
+      "name": "List Devices (by unit, v2)",
+      "path": "/api/v2/units/:unit_id/devices",
+      "deprecated": true
+    },
+    {
+      "name": "List Devices (by unit, v3)",
+      "path": "/api/v3/units/:unit_id/devices",
+      "documentation": "# List Unit Devices\n\n## Endpoint\n\n`GET /api/v3/units/:unit_id/devices`\n\n## Changelog\n\n- Added `pending_state` and `pending_state_requested_at` to the response to represent the desired, but not confirmed state of the attribute\n- Changed `state` and `last_read_at` to no longer return the desired state and only returns the last known/confirmed state\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  current_page: number,\n  total_pages: number,\n  total_records: number,\n  records: [{\n    \"id\": number,\n    \"icon\": string | null,\n    \"battery_level\": number,\n    \"battery_powered\": boolean,\n    \"primary_lock\": boolean,\n    \"show_on_dashboard\": boolean,\n    \"type\": string,\n    \"updated_at\": string | null,\n    \"valid_config\": boolean,\n    \"warning\": boolean,\n    \"pending_update\": boolean,\n    \"online\": boolean,\n    \"name\": string,\n    \"inserted_at\": string | null,\n    \"room\": {\n      \"hub_id\": number,\n      \"icon\": string | null,\n      \"id\": number,\n      \"inserted_at\": string | null,\n      \"name\": string,\n      \"updated_at\": string | null\n    },\n    \"attributes\": [\n    {\n        \"last_read_at\": string,\n        \"name\": string,\n        \"state\": string,\n        \"pending_state\": string | null,\n        \"pending_state_requested_at\" string | null\n    }\n  ]\n  }]\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "List Devices (by unit)",
+      "path": "/api/v1/units/:unit_id/devices",
+      "documentation": "# List Unit Devices\n\n## Endpoint\n\n`GET /api/v1/units/:unit_id/devices`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  current_page: number,\n  total_pages: number,\n  total_records: number,\n  records: [{\n    \"id\": number,\n    \"icon\": string | null,\n    \"battery_level\": number,\n    \"battery_powered\": boolean,\n    \"primary_lock\": boolean,\n    \"show_on_dashboard\": boolean,\n    \"type\": string,\n    \"updated_at\": string | null,\n    \"valid_config\": boolean,\n    \"warning\": boolean,\n    \"pending_update\": boolean,\n    \"online\": boolean,\n    \"name\": string,\n    \"inserted_at\": string | null,\n    \"room\": {\n      \"hub_id\": number,\n      \"icon\": string | null,\n      \"id\": number,\n      \"inserted_at\": string | null,\n      \"name\": string,\n      \"updated_at\": string | null\n    },\n    \"attributes\": {\n      // will vary by device attribute state type\n    }\n  }]\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n",
+      "deprecated": true
+    },
+    {
+      "name": "List Devices (by hub, v2)",
+      "path": "/api/v2/hubs/:hub_id/devices",
+      "deprecated": true
+    },
+    {
+      "name": "List Devices (by hub)",
+      "path": "/api/v1/hubs/:hub_id/devices",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Device (by hub)",
+      "path": "/api/v1/hubs/:hub_id/devices/:device_id",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Device (v2)",
+      "path": "/api/v2/devices/:device_id",
+      "documentation": "# Fetch Device v2\n\n## Endpoint\n\n`GET /api/v2/devices/:device_id`\n\n## Pagination\n\nThis endpoint does not support pagination.\n\n## Parameters\n\nThis endpoint has no parameters.\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"attributes\": {\n    \"last_read_at\": string,\n    \"name\": string,\n    \"state\": string\n  }[],\n  \"battery_level\": number | null,\n  \"battery_powered\": boolean,\n  \"disable_automations\": boolean | null,\n  \"disable_schedules\": boolean | null,\n  \"icon\": string | null,\n  \"id\": number,\n  \"inserted_at\": string | null,\n  \"model\": string | null,\n  \"name\": string,\n  \"online\": boolean,\n  \"paused\": boolean,\n  \"primary_lock\": boolean,\n  \"room\": {\n    \"deleted_at\": string | null,\n    \"icon\": string | null,\n    \"id\": number,\n    \"inserted_at\": string | null,\n    \"name\": string,\n    \"remote_id\": string | null,\n    \"remote_marketing_name\": string | null,\n    \"unit_id\": number | null,\n    \"updated_at\": string | null\n  },\n  \"show_on_dashboard\": boolean,\n  \"type\": string,\n  \"updated_at\": string | null,\n  \"valid_config\": boolean,\n  \"warning\": boolean\n}\n```\n\n&nbsp;\n\nExample Response:\n\n```javascript\n{\n  \"attributes\": [\n    {\n      \"last_read_at\": \"2023-03-10T15:05:30Z\",\n      \"name\": \"heating_setpoint\",\n      \"state\": \"62\"\n    }\n  ],\n  \"battery_level\": null,\n  \"battery_powered\": true,\n  \"icon\": null,\n  \"id\": 1,\n  \"inserted_at\": \"2023-03-10T15:05:22\",\n  \"model\": null,\n  \"name\": \"Thermostat\",\n  \"online\": true,\n  \"paused\": false,\n  \"primary_lock\": false,\n  \"room\": {\n    \"deleted_at\": null,\n    \"icon\": null,\n    \"id\": 1,\n    \"inserted_at\": null,\n    \"name\": \"Room 1\",\n    \"remote_id\": null,\n    \"remote_marketing_name\": null,\n    \"unit_id\": null,\n    \"updated_at\": null\n  },\n  \"show_on_dashboard\": false,\n  \"type\": \"thermostat,\n  \"updated_at\": \"2023-03-10T15:05:22\",\n  \"valid_config\": true,\n  \"warning\": false\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n### 404 Response\n\nNot Found\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"not_found\",\n      \"description\": \"The resource was not found.\"\n    }\n  ]\n}\n```\n",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Device",
+      "path": "/api/v1/devices/:device_id",
+      "documentation": "# Device\n\n## Endpoint\n\n`GET /api/v1/devices/:device_id`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"id\": number,\n  \"icon\": string | null,\n  \"battery_level\": number,\n  \"battery_powered\": boolean,\n  \"primary_lock\": boolean,\n  \"show_on_dashboard\": boolean,\n  \"type\": string,\n  \"updated_at\": string | null,\n  \"valid_config\": boolean,\n  \"warning\": boolean,\n  \"pending_update\": boolean,\n  \"online\": boolean,\n  \"name\": string,\n  \"inserted_at\": string | null,\n  \"room\": {\n    \"hub_id\": number,\n    \"icon\": string | null,\n    \"id\": number,\n    \"inserted_at\": string | null,\n    \"name\": string,\n    \"updated_at\": string | null\n  },\n  \"attributes\": {\n    // will vary by device attribute state type\n  }\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n### 404 Response\n\nNot Found\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"not_found\",\n      \"description\": \"The resource was not found.\"\n    }\n  ]\n}\n```\n",
+      "deprecated": true
+    },
+    {
+      "name": "Search Device Activity (Deprecating Jan 2020)",
+      "path": "/api/v1/hubs/:hub_id/devices/:device_id/activity",
+      "qsParams": [
+        {
+          "name": "limit"
+        },
+        {
+          "name": "offset"
+        }
+      ],
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Device Provider Enrollment Data",
+      "path": "/api/v1/hubs/:hub_id/devices/:device_id/provider-enrollments",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Device Provider Enrollment Data",
+      "path": "/api/v1/devices/:device_id/provider-enrollments",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Device Configuration Parameters",
+      "path": "/api/v2/units/:unit_id/devices/:device_id/resident-device-configuration-parameters"
+    },
+    {
+      "name": "Get Device Configuration From Hub",
+      "path": "/api/v2/units/:unit_id/devices/:device_id/device-settings"
+    },
+    {
+      "name": "Ring Token",
+      "path": "/api/v1/ring/token"
+    },
+    {
+      "name": "Ring OAuth URL",
+      "path": "/api/v1/ring/oauth-url"
+    },
+    {
+      "name": "Ring User",
+      "path": "/api/v1/ring/user"
+    },
+    {
+      "name": "Ring Devices",
+      "path": "/api/v1/ring/devices"
+    },
+    {
+      "name": "Get Ring Device",
+      "path": "/api/v1/ring/devices/:device_id"
+    },
+    {
+      "name": "Ring Device Activity",
+      "path": "/api/v1/ring/devices/activity"
+    },
+    {
+      "name": "Ring Device Activity",
+      "path": "/api/v1/ring/devices/:device_id/activity"
+    },
+    {
+      "name": "Ring Device Snapshots",
+      "path": "/api/v1/ring/devices/:device_id/snapshot"
+    },
+    {
+      "name": "Ring Dings",
+      "path": "/api/v1/ring/dings/"
+    },
+    {
+      "name": "Ring Ding",
+      "path": "/api/v1/ring/dings/:ding_id"
+    },
+    {
+      "name": "Ring Ding Recording",
+      "path": "/api/v1/ring/dings/:ding_id/recording"
+    },
+    {
+      "name": "Ring Enable Subscription",
+      "path": "/api/v1/ring/subscription/enable"
+    },
+    {
+      "name": "Ring Disable Subscription",
+      "path": "/api/v1/ring/subscription/disable"
+    },
+    {
+      "name": "Ring Ice Servers",
+      "path": "/api/v1/ring/ice-servers/"
+    },
+    {
+      "name": "List Automations By Hub ID",
+      "path": "/api/v1/hubs/:hub_id/automations",
+      "deprecated": true
+    },
+    {
+      "name": "List Automation Events by Hub ID",
+      "path": "/api/v1/hubs/:hub_id/devices/:device_id/events",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Automation By Hub ID",
+      "path": "/api/v1/hubs/:hub_id/automations/:automation_id",
+      "deprecated": true
+    },
+    {
+      "name": "List Automations by Unit ID",
+      "path": "/api/v2/units/:unit_id/automations",
+      "documentation": "# Unit Automations\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/automations`\n\n## Parameters\n\nNo parameters are passed to this endpoint\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  current_page: number,\n  total_pages: number,\n  total_records: number,\n  records: [{\n    \"id\": number\n    \"name\": string\n    \"time_cause\":{\n      \"time\": string,\n      \"repeat_on\": string []\n    } | null,\n    \"device_attribute_causes\": [{\n      \"attribute\": string\n      \"device_id\": number\n      \"id\": number\n      \"operator\": string\n      \"value\": string\n    }],\n    \"device_attribute_effects\": [{\n      \"attribute\": string\n      \"device_id\": number\n      \"id\": number\n      \"target_state\": string\n    }],\n    \"user_notification_effect\":{\n      \"send_sms\": boolean,\n      \"send_email\": boolean\n    } | null,\n    \"scene_effects\": [{\n      \"scene_id\": :integer\n    }]\n  }]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Fetch Automation by Unit ID",
+      "path": "/api/v2/units/:unit_id/automations/:automation_id",
+      "documentation": "# Unit Automation\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/automations/:automation_id`\n\n## Parameters\n\nNo parameters are passed to this endpoint\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"id\": number\n  \"name\": string\n  \"time_cause\":{\n    \"time\": string,\n    \"repeat_on\": string []\n  } | null,\n  \"device_attribute_causes\": {\n    \"attribute\": string\n    \"device_id\": number\n    \"id\": number\n    \"operator\": string\n    \"value\": string\n  }[],\n  \"device_attribute_effects\": {\n    \"attribute\": string\n    \"device_id\": number\n    \"id\": number\n    \"target_state\": string\n  }[],\n  \"user_notification_effect\":{\n    \"send_sms\": boolean,\n    \"send_email\": boolean\n  } | null,\n  \"scene_effects\": {\n    \"scene_id\": :integer\n  }[]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "List Automation Events by Unit ID",
+      "path": "/api/v2/units/:unit_id/devices/:device_id/events",
+      "documentation": "# List Unit Device Events\n\n## Endpoint\n\n`GET /api/v1/units/:unit_id/devices/:device_id/events`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  current_page: number,\n  total_pages: number,\n  total_records: number,\n  records: [{\n    \"id\": number,\n    \"name\": string,\n    \"device_attribute_effects\": [{\n      \"attribute\": string\n      \"device_id\": number\n      \"id\": number\n      \"target_state\": boolean\n    }],\n    \"time_cause\":{\n      \"time\": string,\n      \"repeat_on\": string []\n    }\n  }]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n#### 404 - Not Found\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"not_found\",\n      \"description\": \"The resource was not found.\"\n    }\n  ]\n}\n```\n\n### 422 Response\n\nUnprocessable Entity\n\nA response with an HTTP status code of 422 with an error indicating how to fix the problem.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"required\",\n      \"description\": \"Request is missing required field(s)\",\n      \"field\": null\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Parking Group",
+      "path": "/api/v1/groups/:group_id/parking"
+    },
+    {
+      "name": "List Parking Vehicles",
+      "path": "/api/v1/parking/vehicles",
+      "qsParams": [
+        {
+          "name": "group_uuid"
+        },
+        {
+          "name": "page"
+        },
+        {
+          "name": "limit"
+        },
+        {
+          "name": "sort"
+        },
+        {
+          "name": "dir"
+        }
+      ]
+    },
+    {
+      "name": "Get Parking Vehicle",
+      "path": "/api/v1/parking/vehicles/:vehicle_id"
+    },
+    {
+      "name": "Fetch Hub (v1)",
+      "path": "/api/v1/hubs/:hub_id",
+      "deprecated": true
+    },
+    {
+      "name": "Fetch Hub",
+      "path": "/api/v2/hubs/:hub_id",
+      "deprecated": true
+    },
+    {
+      "name": "List Hubs (v1)",
+      "path": "/api/v1/hubs",
+      "deprecated": true
+    },
+    {
+      "name": "List Hubs",
+      "path": "/api/v2/hubs",
+      "deprecated": true
+    },
+    {
+      "name": "Get WiFi Network Scan Results",
+      "path": "/api/v1/hubs/:hub_id/wifi-scan/:discovery_id",
+      "deprecated": true
+    },
+    {
+      "name": "Get WiFi Connection Status",
+      "path": "/api/v1/hubs/:hub_id/wifi-connect/:connection_id",
+      "deprecated": true
+    },
+    {
+      "name": "Get WiFi Network Scan Results",
+      "path": "/api/v2/hubs/:hub_id/wifi-scan/:discovery_id",
+      "documentation": "## Get WIFI Network Scan Results\n\n- `GET /api/v2/hubs/:hub_id/wifi-scan/:scan_id`\n\n### Responses\n\n#### 200 - OK\n\n```json\n{\n  \"results\": {\n    \"messages\": [],\n    \"running\": false,\n    \"create_timestamp\": \"2021-11-17T17:43:08Z\",\n    \"start_timestamp\": null,\n    \"stop_timestamp\": null\n  }\n}\n```\n\n#### 404 - Not Found\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"hub_not_found\",\n      \"description\": \"Hub not found.\"\n    }\n  ]\n}\n```\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"wifi_scan_not_found\",\n      \"description\": \"Wifi connection results could not be found.\"\n    }\n  ]\n}\n```\n\n#### 409 - Conflict\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"reboot_required\",\n      \"description\": \"A problem was detected with the hub, please wait while it reboots.\"\n    }\n  ]\n}\n```\n\n#### 500 - Error\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"error\",\n      \"description\": \"Something went wrong trying to process your request, please try again.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get WiFi Connection Status",
+      "path": "/api/v2/hubs/:hub_id/wifi-connect/:connection_id",
+      "documentation": "## Get Wifi Connection Status\n\n- `GET /api/v2/hubs/:hub_id/wifi-connect/:connection_id`\n\n### Responses\n\n#### 200 - OK\n\n```json\n{\n  \"results\": {\n    \"messages\": [],\n    \"running\": true,\n    \"create_timestamp\": \"2021-11-17T17:43:08Z\",\n    \"start_timestamp\": \"2021-11-17T17:43:08Z\",\n    \"stop_timestamp\": null\n  }\n}\n```\n\n#### 408 - Timeout\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"timeout\",\n      \"description\": \"Connection timed out, please try again\"\n    }\n  ]\n}\n```\n\n#### 404 - Not Found\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"wifi_scan_not_found\",\n      \"description\": \"Wifi connection results could not be found.\"\n    }\n  ]\n}\n```\n\n#### 403 - Forbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n#### 409 - Conflict\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"reboot_required\",\n      \"description\": \"A problem was detected with the hub, please wait while it reboots.\"\n    }\n  ]\n}\n```\n\n#### 500 - Error\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"error\",\n      \"description\": \"Something went wrong trying to process your request, please try again.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get WiFi Info",
+      "path": "/api/v1/managed-wifi",
+      "documentation": "## Fetch Resident Community WiFi Account\n\n- `GET /api/v1/managed-wifi`\n\n### Responses\n\n#### 200 - OK\n\n```json\n{\n    \"password_requirements\": string | null,\n    \"platform_psk\": string | null,\n    \"ssid\": string,\n    \"wifi_psk\": string\n}\n```\n\n#### 404 - Not Found\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"not_found\",\n      \"description\": \"The resource was not found.\"\n    }\n  ]\n}\n```\n\n#### 401 - Unauthorized\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Service Request",
+      "path": "/api/v2/units/:unit_id/service-requests/:service_request_id",
+      "documentation": "# Get Service Request\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/service-requests/:service_request_id`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"service_request\": {\n    \"service_request_id\": uuid,\n    \"rev\": string,\n    \"workspace_id\": string,\n    \"workspace\": {\n      \"id\": string,\n      \"display_names\": {\n        \"en\": string\n      },\n      \"icon\": string\n    },\n    \"category_id\": string,\n    \"category\": {\n      \"id\": string,\n      \"display_names\": {\n        \"en\": string\n      },\n      \"icon\": string\n    },\n    \"subcategory_id\": string,\n    \"subcategory\": {\n      \"id\": string,\n      \"display_names\": {\n        \"en\": string\n      },\n      \"icon\": string\n    },\n    \"entry_permission\": string,\n    \"entry_instructions\": string,\n    \"is_emergency\": boolean,\n    \"is_open\": boolean,\n    \"objective_text\": string,\n    \"created_at\": datetime,\n    \"completed_at\": datetime,\n    \"is_open\": boolean,\n    \"reopen_until\": datetime,\n    \"can_reopen\": boolean,\n    \"created_by_id\": uuid,\n    \"created_by\": {\n      \"id\": uuid,\n      \"display_name\": string,\n      \"profile_image\": string,\n      \"resident\": boolean\n    },\n    \"assignee_id\": uuid,\n    \"assignee\": {\n      \"id\": uuid,\n      \"display_name\": string,\n      \"profile_image\": string\n    },\n    \"completed_by_id\": uuid,\n    \"completed_by\": {\n      \"id\": uuid,\n      \"display_name\": string,\n      \"profile_image\": string,\n      \"resident\": boolean\n    },\n    \"place_id\": uuid,\n    \"place\": {\n      \"id\": uuid,\n      \"name\": string\n    },\n    \"unit_id\": integer,\n    \"unit\": {\n      \"id\": number,\n      \"marketing_name\": string\n    },\n    \"service_request_unit_id\": string,\n    \"unit\": {\n      \"building\": string,\n      \"city\": string,\n      \"country\": string,\n      \"floor\": string,\n      \"group_id\": integer,\n      \"id\": integer,\n      \"image_url\": string,\n      \"marketing_name\": string,\n      \"state\": string,\n      \"street_address_1\": string,\n      \"street_address_2\": string,\n      \"temperature_scale\": string,\n      \"timezone\": string,\n      \"unit_code\": string,\n      \"zip\": string\n    },\n    \"geo_location\": {\n      \"lat\": decimal,\n      \"long\": decimal\n    },\n    \"can_rate\": boolean,\n    \"rating\": {\n      \"rated_at\": datetime,\n      \"rating\": integer,\n      \"comment\": string\n    },\n    \"objective_media\": [\n      {\n        \"full\": {\n          \"content_type\": string,\n          \"url\": string\n        },\n        \"preview\": {\n          \"content_type\": string,\n          \"url\": string\n        },\n        \"thumbnail\": {\n          \"content_type\": string,\n          \"url\": string\n        },\n        \"audio\": {\n          \"content_type\": string,\n          \"url\": string\n        }\n      }\n    ],\n    \"actions\": {\n      \"reopen\": string,\n      \"comments\": string,\n      \"rate\": string\n    }\n  }\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Service Requests",
+      "path": "/api/v2/units/:unit_id/service-requests",
+      "documentation": "# Get Service Requests\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/service-requests`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"records\": [\n    {\n      \"service_request_id\": uuid,\n      \"rev\": string,\n      \"workspace_id\": string,\n      \"workspace\": {\n        \"id\": string,\n        \"display_names\": {\n          \"en\": string\n        },\n        \"icon\": string\n      },\n      \"category_id\": string,\n      \"category\": {\n        \"id\": string,\n        \"display_names\": {\n          \"en\": string\n        },\n        \"icon\": string\n      },\n      \"subcategory_id\": string,\n      \"subcategory\": {\n        \"id\": string,\n        \"display_names\": {\n          \"en\": string\n        },\n        \"icon\": string\n      },\n      \"entry_permission\": string,\n      \"entry_instructions\": string,\n      \"is_emergency\": boolean,\n      \"is_open\": boolean,\n      \"objective_text\": string,\n      \"created_at\": datetime,\n      \"completed_at\": datetime,\n      \"is_open\": boolean,\n      \"reopen_until\": datetime,\n      \"can_reopen\": boolean,\n      \"created_by_id\": uuid,\n      \"created_by\": {\n        \"id\": uuid,\n        \"display_name\": string,\n        \"profile_image\": string,\n        \"resident\": boolean\n      },\n      \"assignee_id\": uuid,\n      \"assignee\": {\n        \"id\": uuid,\n        \"display_name\": string,\n        \"profile_image\": string\n      },\n      \"completed_by_id\": uuid,\n      \"completed_by\": {\n        \"id\": uuid,\n        \"display_name\": string,\n        \"profile_image\": string,\n        \"resident\": boolean\n      },\n      \"place_id\": uuid,\n      \"place\": {\n        \"id\": uuid,\n        \"name\": string\n      },\n      \"unit_id\": integer,\n      \"unit\": {\n        \"id\": number,\n        \"marketing_name\": string\n      },\n      \"service_request_unit_id\": string,\n      \"unit\": {\n        \"building\": string,\n        \"city\": string,\n        \"country\": string,\n        \"floor\": string,\n        \"group_id\": integer,\n        \"id\": integer,\n        \"image_url\": string,\n        \"marketing_name\": string,\n        \"state\": string,\n        \"street_address_1\": string,\n        \"street_address_2\": string,\n        \"temperature_scale\": string,\n        \"timezone\": string,\n        \"unit_code\": string,\n        \"zip\": string\n      },\n      \"geo_location\": {\n        \"lat\": decimal,\n        \"long\": decimal\n      },\n      \"can_rate\": boolean,\n      \"rating\": {\n        \"rated_at\": datetime,\n        \"rating\": integer,\n        \"comment\": string\n      },\n      \"objective_media\": [\n        {\n          \"full\": {\n            \"content_type\": string,\n            \"url\": string\n          },\n          \"preview\": {\n            \"content_type\": string,\n            \"url\": string\n          },\n          \"thumbnail\": {\n            \"content_type\": string,\n            \"url\": string\n          },\n          \"audio\": {\n            \"content_type\": string,\n            \"url\": string\n          }\n        }\n      ],\n      \"actions\": {\n        \"reopen\": string,\n        \"comments\": string,\n        \"rate\": string\n      }\n    }\n  ],\n  \"current_page\": integer,\n  \"total_pages\": integer,\n  \"total_records\": integer\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n",
+      "qsParams": [
+        {
+          "name": "queryId"
+        },
+        {
+          "name": "page",
+          "defaultValue": 0
+        },
+        {
+          "name": "limit",
+          "defaultValue": 100
+        },
+        {
+          "name": "state",
+          "defaultValue": "open"
+        }
+      ]
+    },
+    {
+      "name": "Get Service Request Categories",
+      "path": "/api/v2/units/:unit_id/service-requests/categories",
+      "documentation": "# Get Service Request Categories\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/service-requests/categories`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"categories\": [\n    {\n      \"id\": string,\n      \"parent\": string,\n      \"display_names\": {\n        \"en\": string,\n        \"es\": string\n      },\n      \"workspace\": string,\n      \"hide_from_residents\": boolean,\n      \"icon_id\": string,\n      \"res_confirm_urgent_text\": {\n        \"en\": string,\n        \"es\": string\n      },\n      \"resident_instructions\": {\n        \"en\": string,\n        \"es\": string\n      },\n      \"set_task_to_urgent\": boolean,\n      \"enabled\": boolean,\n      \"type\": string\n    }\n  ]\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Service Request Options",
+      "path": "/api/v2/units/:unit_id/service-requests/new"
+    },
+    {
+      "name": "Get Service Request Comments",
+      "path": "/api/v2/units/:unit_id/service-requests/:service_request_id/comments",
+      "documentation": "# Get Service Request Comments\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/service-requests/:service_request_id/comments`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"records\": [\n    {\n      \"id\": string,\n      \"created_at\": datetime,\n      \"created_by_id\": string,\n      \"created_by\": {\n        \"display_name\": string,\n        \"id\": string,\n        \"profile_image\": string,\n        \"resident\": boolean\n      },\n      \"note_type\": string,\n      \"resident_visible\": boolean,\n      \"text\": string\n    }\n  ]\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials.\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Service Request Activity",
+      "path": "/api/v2/units/:unit_id/service-requests/activity",
+      "documentation": "# Get Service Request Actvity\n\nRetrieves activity information for Service Requests as well as Community Messaging.\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/service-requests/activity`\n\n## Query Parameters\n\n- `query_id`: string, options. Used for mapping log tracking entries only.\n- `page`: integer, optional. Page of results to display.\n- `limit`: integer, optional. Number of results returned per page.\n- `service_request_id`: string, optional. Returnes results for the identified Service Request ID exclusively.\n- `start`: utc_datetime, optional. Starting date to filter activity from.\n- `end`: utc_datetime, optional. Ending date to filter activity from.\n- `categories`: string, optional. Comma-separated list of activity genres to return.\n  valid data is `service-request`, `broadcast-message`, or `service-request,broadcast-message` in any order.\n\n## Responses\n\n### 200 Response (Service Request)\n\n```javascript\n{\n  \"records\": [\n    {\n      \"can_rate\": boolean,\n      \"category\": {\n        \"display_names\": {\n          \"en\": string\n        },\n        \"icon\": string,\n        \"id\": string\n      },\n      \"category_id\": string,\n      \"change_type\": string,\n      \"changed_at\": datetime,\n      \"comment\": string,\n      \"completed_by\": datetime | null,\n      \"completed_by_id\": string | null,\n      \"created_by\": {\n        \"display_name\": string,\n        \"email\": string,\n        \"id\": string,\n        \"profile_image\": string | null,\n        \"resident\": boolean,\n        \"title\": string\n      },\n      \"created_by_id\": string,\n      \"friendly_id\": string,\n      \"id\": string,\n      \"is_emergency\": boolean,\n      \"is_open\": boolean,\n      \"service_request_id\": string,\n      \"subcategory\": {\n        \"id\": string,\n        \"display_names\": {\n          \"en\": string\n        },\n        \"icon\": string\n      },\n      \"subcategory_id\": string | null,\n      \"workspace\": {\n        \"display_names\": {\n          \"en\": string\n        },\n        \"icon\": string,\n        \"id\": string\n      },\n      \"workspace_id\": string\n    }\n  ],\n  \"current_page\": integer,\n  \"total_pages\": integer,\n  \"total_records\": integer\n}\n```\n\n### 200 Response (Community Message)\n\n```javascript\n{\n  \"records\": [\n    {\n      \"attachments\": [\n        {\n          \"id\": string,\n          \"type\": string,\n          \"url\": string,\n          \"name\": string,\n          \"content_type\": string,\n          \"size\": number\n        }\n      ],\n      \"body\": {\n        \"en\": string\n      },\n      \"change_type\": string,\n      \"id\": string,\n      \"sent_at\": datetime,\n      \"sent_by\": {\n        \"display_name\": string,\n      },\n      \"sent_by_id\": string,\n      \"subject\": {\n        \"en\": string\n      }\n    }\n  ],\n  \"current_page\": integer,\n  \"total_pages\": integer,\n  \"total_records\": integer\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n",
+      "qsParams": [
+        {
+          "name": "query_id"
+        },
+        {
+          "name": "page",
+          "defaultValue": 1
+        },
+        {
+          "name": "limit",
+          "defaultValue": 25
+        },
+        {
+          "name": "service_request_id"
+        },
+        {
+          "name": "start",
+          "defaultValue": "2023-01-01T00:00:00.000Z"
+        },
+        {
+          "name": "end",
+          "defaultValue": "2023-01-30T00:00:00.000Z"
+        },
+        {
+          "name": "categories"
+        }
+      ]
+    },
+    {
+      "name": "List Broadcast Messages",
+      "path": "/api/v2/units/:unit_id/broadcast-messages",
+      "documentation": "# List Broadcast Messages\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/broadcast-messages`\n\n## Responses\n\n### 200 Response\n\n- `attachments.type`: Can be `link` or `survey`\n- `attachments.content_type`: Content of the attachment, such as `image/png`, `application/pdf`\n\n```javascript\n{\n  \"records\": [\n    {\n      \"id\": uuid,\n      \"body\": {\n        \"en\": string,\n        \"es\": string\n      },\n      \"created_at\": datetime,\n      \"created_by\": {\n        \"display_name\": string,\n        \"id\": uuid,\n        \"profile_image\": string,\n        \"resident\": boolean\n      },\n      \"created_by_id\": uuid,\n      \"sent_at\": datetime,\n      \"sent_by\": {\n        \"display_name\": string,\n        \"id\": uuid,\n        \"profile_image\": string,\n        \"resident\": boolean\n      },\n      \"sent_by_id\": uuid,\n      \"subject\": {\n        \"en\": string,\n        \"es\": string\n      },\n      \"attachments\": [\n        {\n          \"content_type\": string,\n          \"id\": uuid,\n          \"name\": string,\n          \"size\": number,\n          \"type\": string,\n          \"url\": string\n        }\n      ],\n    }\n  ],\n  \"current_page\": integer,\n  \"total_pages\": integer,\n  \"total_records\": integer\n}\n```\n\n#### Example\n\n```javascript\n{\n  \"records\": [\n    {\n      \"attachments\": [\n        {\n          \"content_type\": \"string\",\n          \"id\": \"286d22de-9d57-4b5d-805d-df2781478ee1\",\n          \"name\": \"link\",\n          \"size\": 0,\n          \"type\": \"link\",\n          \"url\": \"https://media.smartrent.com/fad71532-14b7-48aa-acd0-afa7def83e15\"\n        }\n      ],\n      \"body\": {\n        \"en\": \"Subject\",\n        \"es\": \"Subject\"\n      },\n      \"created_at\": \"2023-03-30 10:59:53.811867Z\",\n      \"created_by\": {\n        \"display_name\": \"Dan Stirk\",\n        \"id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n        \"profile_image\": null,\n        \"resident\": false\n      },\n      \"created_by_id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n      \"id\": \"fbbf6789-2267-40f3-bf43-2acc8a65b14b\",\n      \"sent_at\": \"2023-03-30 10:59:53.812269Z\",\n      \"sent_by\": {\n        \"display_name\": \"Dan Stirk\",\n        \"id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n        \"profile_image\": null,\n        \"resident\": false\n      },\n      \"sent_by_id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n      \"subject\": {\n        \"en\": \"Subject\",\n        \"es\": \"Subject\"\n      }\n    }\n  ],\n  \"current_page\": 1,\n  \"total_pages\": 1,\n  \"total_records\": 1\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n",
+      "qsParams": [
+        {
+          "name": "queryId"
+        },
+        {
+          "name": "page",
+          "defaultValue": 0
+        },
+        {
+          "name": "limit",
+          "defaultValue": 100
+        },
+        {
+          "name": "from_date",
+          "placeholder": "2023-03-01T00:00:00Z"
+        },
+        {
+          "name": "until_date",
+          "placeholder": "2023-03-02T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "Get Broadcast Message",
+      "path": "/api/v2/units/:unit_id/broadcast-messages/:broadcast_message_id",
+      "documentation": "# Get Broadcast Message\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/broadcast-messages/:id`\n\n## Responses\n\n### 200 Response\n\n- `attachments.type`: Can be `link` or `survey`\n- `attachments.content_type`: Content of the attachment, such as `image/png`, `application/pdf`\n\n```javascript\n{\n  \"id\": uuid,\n  \"body\": {\n    \"en\": string,\n    \"es\": string\n  },\n  \"created_at\": datetime,\n  \"created_by\": {\n    \"display_name\": string,\n    \"id\": uuid,\n    \"profile_image\": string,\n    \"resident\": boolean\n  },\n  \"created_by_id\": uuid,\n  \"sent_at\": datetime,\n  \"sent_by\": {\n    \"display_name\": string,\n    \"id\": uuid,\n    \"profile_image\": string,\n    \"resident\": boolean\n  },\n  \"sent_by_id\": uuid,\n  \"subject\": {\n    \"en\": string,\n    \"es\": string\n  },\n  \"attachments\": [\n    {\n      \"content_type\": string,\n      \"id\": uuid,\n      \"name\": string,\n      \"size\": number,\n      \"type\": string,\n      \"url\": string\n    }\n  ],\n}\n```\n\n#### Example\n\n```javascript\n{\n  \"attachments\": [\n    {\n      \"content_type\": \"string\",\n      \"id\": \"286d22de-9d57-4b5d-805d-df2781478ee1\",\n      \"name\": \"link\",\n      \"size\": 0,\n      \"type\": \"link\",\n      \"url\": \"https://media.smartrent.com/fad71532-14b7-48aa-acd0-afa7def83e15\"\n    }\n  ],\n  \"body\": {\n    \"en\": \"Subject\",\n    \"es\": \"Subject\"\n  },\n  \"created_at\": \"2023-03-30 10:59:53.811867Z\",\n  \"created_by\": {\n    \"display_name\": \"Dan Stirk\",\n    \"id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n    \"profile_image\": null,\n    \"resident\": false\n  },\n  \"created_by_id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n  \"id\": \"fbbf6789-2267-40f3-bf43-2acc8a65b14b\",\n  \"sent_at\": \"2023-03-30 10:59:53.812269Z\",\n  \"sent_by\": {\n    \"display_name\": \"Dan Stirk\",\n    \"id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n    \"profile_image\": null,\n    \"resident\": false\n  },\n  \"sent_by_id\": \"06b904ec-825f-4277-a7e5-25488029c33f\",\n  \"subject\": {\n    \"en\": \"Subject\",\n    \"es\": \"Subject\"\n  }\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Read Activity",
+      "path": "/api/v2/units/:unit_id/read-activity",
+      "documentation": "# Get Read Activity\n\nResident users may view data from third party integrations in the app. The **Get Read Activity** and **Update Read Activity** endpoints allow residents to acknowledge receipt of external resources and track the resource ids of items they have marked as read.\n\n## `GET /api/v2/units/:unit_id/read-activity`\n\nReturns a paginated list of \"read activity\" for the currently authenticated resident. Each record includes the type of resource, the id of the resource, and the timestamp which the resident most recently marked the resource as read. If a resource is not present in the returned records, it is an indication that the resident has not acknowledged receipt of the item yet.\n\n### Query String Parameters\n\nAll parameters are optional. However, `resource_ids` may not be used unless `resource_type` is also specified.\n\n- `since`: Filter read activity to where the `last_read_at` timestamp is no older than the specified timestamp in ISO 8601 format\n- `resource_type`: Filter read activity to the given type of resource\n- `resource_ids`: **Requires `resource_type` to be specified.** Filter to only include read activity for the given comma-separated ids\n- `page`: Page number\n- `limit`: Max records to return per page (default: 100)\n\n### Responses\n\n#### 200 Response\n\nRead activity data is returned as a paginated response, sorted by the `last_read_at` timestamp descending (i.e. with most recent read activity first).\n\nIf a resource has never been marked as read by the resident, it will not appear in the result set, even if it is listed in the `resource_ids` query parameter.\n\nOnly one record will exist per combination of `resource_type` and `resource_id`, even if it has been marked as read multiple times. The `last_read_at` timestamp will reflect the time the resource was most recently marked as read.\n\n```typescript\n{\n  records: {\n    id: number; // positive integer\n    resource_type: string;\n    resource_id: string;\n    last_read_at: string; // ISO timestamp\n  }\n  [];\n  current_page: number; // positive integer\n  total_pages: number; // positive integer\n  total_records: number; // non-negative integer\n}\n```\n\nExample:\n\n```json\n{\n  \"records\": [\n    {\n      \"id\": 123,\n      \"resource_type\": \"service_request\",\n      \"resource_id\": \"2f73fd90-caf8-4bb0-9758-8912558d9f34\",\n      \"last_read_at\": \"2023-03-30T23:18:51.983Z\"\n    }\n  ],\n  \"current_page\": 1,\n  \"total_pages\": 1,\n  \"total_records\": 1\n}\n```\n\n#### 422 Response\n\nA 422 response is returned if invalid data is submitted in the query string parameters.\n\nThe response body contains an `errors` array specifying details about the problem. Each error object has the name of the request `field` associated with the error message, a `code` identifying the error, and a human-readable `description`.\n\nExample:\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"required\",\n      \"description\": \"This field is required when `resource_ids` parameter is specified.\",\n      \"field\": \"resource_type\"\n    }\n  ]\n}\n```\n\n#### 403 Response\n\nIf the currently authenticated resident does not have access to the unit with the given id, or if the currently authenticated user is not a resident, a 403 status code is returned.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n#### 404 Response\n\nIf the unit id parameter is not an integer, a 404 status code is returned.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"not_found\",\n      \"description\": \"The resource was not found.\"\n    }\n  ]\n}\n```\n\n#### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n",
+      "qsParams": [
+        {
+          "name": "since",
+          "description": "Limit to events that occurred after the timestamp",
+          "placeholder": "2024-03-07T01:15:31.723Z"
+        },
+        {
+          "name": "resource_type",
+          "description": "Limit to events matching the type",
+          "options": [
+            {
+              "value": "service_request"
+            },
+            {
+              "value": "broadcast_message"
+            }
+          ]
+        },
+        {
+          "name": "resource_ids",
+          "description": "Limit to events matching the comma-separated ids (resource_type parameter is required)"
+        },
+        {
+          "name": "page",
+          "defaultValue": "1"
+        },
+        {
+          "name": "limit",
+          "defaultValue": "100"
+        }
+      ]
+    },
+    {
+      "name": "Get Resident Preferences",
+      "path": "/api/v2/units/:unit_id/resident-preferences",
+      "documentation": "# Get Resident Preferences\n\nResident users may store custom configuration to tailor their personal app experience. These resident preferences are currently used to persist the resident's preferred arrangement of device and access control and frequently used scenes on their personal dashboard. In the future, other resident preferences may be persisted to this endpoint.\n\nResident preferences are always scoped to a unit.\n\n## `GET /api/v2/units/:unit_id/resident-preferences`\n\nWill return the currently stored preferences for the currently authenticated resident, for the unit with the given id.\n\n### Responses\n\n#### 200 Response\n\nIf a resident has already stored preferences before using the `Set Resident Preferences` endpoint, then their preferences will be returned in the API response body. If the resident has not yet stored preferences against this particular unit, an empty preferences object is returned.\n\n```typescript\n{\n  updated_at: string; // ISO timestamp\n  preferences: Record<string, never> | {\n    version: number;\n    last_updated: string;\n    dashboard: {\n      scenes: {\n        category: \"smart_home_devices\";\n        type: \"scene\";\n        data: {\n          id: number; // positive integer\n        };\n      }[];\n      widgets: (\n        | {\n          category: \"smart_home_devices\";\n          type: \"device\";\n          data: {\n            id: number; // positive integer\n          };\n        }\n        | {\n          category: \"smart_home_devices\";\n          type: \"home_security\";\n        }\n        | {\n          category: \"smart_home_devices\";\n          type: \"scenes_list\";\n        }\n        | {\n          category: \"community\";\n          type: \"broadcast_messages\";\n        }\n        | {\n          category: \"community\";\n          type: \"service_requests\";\n        }\n        | {\n          category: \"access\";\n          type: \"my_access\";\n        }\n      )[];\n    }\n  };\n}\n```\n\nExamples:\n\nThe resident has not yet saved their preferences:\n\n```json\n{\n  \"updated_at\": null,\n  \"preferences\": {}\n}\n```\n\nThe resident configured their preferred dashboard widget preferences:\n\n```json\n{\n  \"updated_at\": \"2023-04-10T23:38:12.075Z\",\n  \"preferences\": {\n    \"version\": 1,\n    \"last_updated\": \"2023-04-10T23:38:12.075Z\",\n    \"dashboard\": {\n      \"scenes\": [\n        {\n          \"category\": \"smart_home_devices\",\n          \"type\": \"scene\",\n          \"data\": { \"id\": 100 }\n        }\n      ],\n      \"widgets\": [\n        {\n          \"category\": \"smart_home_devices\",\n          \"type\": \"device\",\n          \"data\": { \"id\": 200 }\n        },\n        {\n          \"category\": \"access\",\n          \"type\": \"my_access\"\n        },\n        {\n          \"category\": \"smart_home_devices\",\n          \"type\": \"scenes_list\"\n        }\n      ]\n    }\n  }\n}\n```\n\n#### 403 Response\n\nIf the currently authenticated resident does not have access to the unit with the given id, or if the currently authenticated user is not a resident, a 403 status code is returned.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n#### 404 Response\n\nIf the unit id parameter is not an integer, a 404 status code is returned.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"not_found\",\n      \"description\": \"The resource was not found.\"\n    }\n  ]\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n"
+    },
+    {
+      "name": "Get Resident Notifications",
+      "path": "/api/v1/resident-notifications",
+      "documentation": "# Get Resident Notifications\n\nUsers of the SmartRent Resident app can opt into or out of push notifications to their devices. In addition to having push notifications delivered to their devices in realtime, residents may query a history of notifications and are able to review important alerts even when opting out of push notifications. Resident notifications may be marked as read and filtered by read/unread status. See **Mark Resident Notifications as Read** and **Mark Notifications as Unread** endpoints.\n\n## `GET /api/v1/resident-notifications`\n\nReturns a paginated list of resident notifications for the currently authenticated user, sorted with the most recent notifications first.\n\n### Query String Parameters\n\nAll parameters are optional. Filters are additive.\n\n- `ids`: Filter to only notifications with the given ids. Comma-separated values\n- `event_type`: Filter notifications by their event type. Comma-separated values\n- `communication_preference_category`: Filter notifications by their push preferences category. Comma-separated values\n- `unit_id`: Filter notifications by unit. Comma-separated values\n- `inserted_at_after`: Filter to notifications that were delivered after the given ISO timestamp\n- `inserted_at_before`: Filter to notifications that were delivered before the given ISO timestamp\n- `is_read`: If `true`, filters to notifications with a non-null `read_at` timestamp; if `false`, filters to notifications with a null `read_at` timestamp\n- `read_at_after`: Filter to notifications that were marked as read after the given ISO timestamp\n- `read_at_before`: Filter to notifications that were marked as read before the given ISO timestamp\n- `page`: Page number\n- `limit`: Max records to return per page (default: 25)\n\nSome notification event types also have additional metadata stored with the notification, called _custom data_, which varies for each type. Query string parameters with names that start with `custom_data.` can be applied to filter the results. The parameter value is also treated as comma-separated.\n\nExample request to get unread all notifications for a particular unit:\n\n```\nGET /api/v1/resident-notifications?unit_id=1&is_read=false\n```\n\nExample request to get only specific types of notifications:\n\n```\nGET /api/v1/resident-notifications?unit_id=1&event_type=ring_ding,ring_motion\n```\n\nExample request to get only notifications created within a certain time range:\n\n```\nGET /api/v1/resident-notifications?inserted_at_after=2023-11-01T00:00:00.000Z&inserted_at_before=2023-11-08T23:59:59.999Z\n```\n\nExample request to get notifications based on custom_data fields:\n\n```\nGET /api/v1/resident-notifications?event_type=broadcast-message-create&custom_data.broadcast_message_id=8fc449de-436d-4b19-9614-6890ba2be29a,76e17378-7b19-443f-ac9e-214e17eb981e\n```\n\n### Responses\n\n#### 200 Response\n\nResident notifications are returned as a paginated response, sorted by the `inserted_at` timestamp descending (i.e. with most recent notifications first).\n\n```typescript\n{\n  records: {\n    id: number; // positive integer\n    event_type:\n      | \"away_mode_disabled\"\n      | \"broadcast-message-create\"\n      | \"code_replacement_failed\"\n      | \"guest_access_code_used\"\n      | \"humidity_alert\"\n      | \"intercom_call\"\n      | \"leak_detected\"\n      | \"lock_jammed\"\n      | \"low_battery\"\n      | \"pm_code_used\"\n      | \"ring_battery\"\n      | \"ring_ding\"\n      | \"ring_motion\"\n      | \"security_event\"\n      | \"service-request-complete\"\n      | \"service-request-create\"\n      | \"service-request-note-create\"\n      | \"service-request-reopen\"\n      | \"temperature_alert\"\n      | \"work_order_code_used\"\n      | \"work_order_completed\"\n      | \"work-order-created\";\n    communication_preference_category:\n      | \"access\"\n      | \"alerts\"\n      | \"maintenance\"\n      | \"push_broadcast_messaging\"\n      | \"ring_battery\"\n      | \"ring_ding\"\n      | \"ring_motion\"\n      | \"security\"\n      | \"service_request_closed\"\n      | \"service_request_comment_created\"\n      | \"service_request_created\"\n      | \"service_request_reopened\";\n    title: string;\n    body: string;\n    unit_id: number; // positive integer\n    custom_data: Record<string, any>;\n    read_at: string | null; // ISO timestamp\n    inserted_at: string; // ISO timestamp\n  }[];\n  current_page: number; // positive integer\n  total_pages: number; // positive integer\n  total_records: number; // non-negative integer\n}\n```\n\nExample:\n\n```json\n{\n  \"records\": [\n    {\n      \"id\": 1454,\n      \"event_type\": \"security_event\",\n      \"communication_preference_category\": \"security\",\n      \"title\": \"Security Alert\",\n      \"body\": \"There is activity on one or more of your security sensors. Security Camera was triggered at 3:05pm. Click to view the current status.\",\n      \"custom_data\": {\n        \"event_type\": \"security_event\",\n        \"unit_id\": 1,\n        \"device_id\": 52\n      },\n      \"read_at\": null,\n      \"unit_id\": 1,\n      \"inserted_at\": \"2023-10-03T00:06:22.184899\"\n    }\n  ],\n  \"current_page\": 1,\n  \"total_pages\": 1,\n  \"total_records\": 1\n}\n```\n\n#### 403 Response\n\nIf the currently authenticated user is not a resident, a 403 status code is returned.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n\n#### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n",
+      "qsParams": [
+        {
+          "name": "ids",
+          "description": "Comma-separated resident notification ids",
+          "placeholder": "1, 2, 3..."
+        },
+        {
+          "name": "event_type",
+          "description": "Comma-separated event types",
+          "placeholder": "away_mode_disabled,broadcast-message-create..."
+        },
+        {
+          "name": "communication_preference_category",
+          "description": "Comma-separated preference categories",
+          "placeholder": "access,alerts,maintenance..."
+        },
+        {
+          "name": "unit_id",
+          "description": "Comma-separated unit ids",
+          "placeholder": "1, 2, 3..."
+        },
+        {
+          "name": "inserted_at_after",
+          "placeholder": "2024-03-07T01:15:31.723Z"
+        },
+        {
+          "name": "inserted_at_before",
+          "placeholder": "2024-03-07T01:15:31.723Z"
+        },
+        {
+          "name": "is_read",
+          "options": [
+            {
+              "label": "true",
+              "value": true
+            },
+            {
+              "label": "false",
+              "value": false
+            }
+          ]
+        },
+        {
+          "name": "read_at_after",
+          "placeholder": "2024-03-07T01:15:31.723Z"
+        },
+        {
+          "name": "read_at_before",
+          "placeholder": "2024-03-07T01:15:31.723Z"
+        },
+        {
+          "name": "page",
+          "placeholder": "1"
+        },
+        {
+          "name": "limit",
+          "placeholder": "25"
+        }
+      ]
+    },
+    {
+      "name": "List Packages",
+      "path": "/api/v2/units/:unit_id/packages",
+      "method": "GET",
+      "documentation": "# List Packages\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/packages`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n  \"total_records\": integer,\n  \"total_pages\": integer,\n  \"current_page\": integer,\n  \"records\": [\n    {\n      \"carrier\": string | null,\n      \"completed_at\": string | null,\n      \"completed_by\": string | null,\n      \"completed_by_id\": string | null,\n      \"condition\": string,\n      \"created_at\": datetime,\n      \"created_by\": {\n        \"display_name\": string,\n        \"email\": string,\n        \"id\": uuid,\n        \"profile_image\": string | null,\n        \"resident\": boolean,\n        \"title\": string\n      },\n      \"created_by_id\": uuid,\n      \"description\": null,\n      \"id\": uuid,\n      \"photos\": [],\n      \"place\": {\n        \"id\": uuid,\n        \"name\": string\n      },\n      \"place_id\": uuid,\n      \"status\": string,\n      \"sub_type\": string,\n      \"tracking_number\": string,\n      \"unit\": {\n        \"id\": uuid,\n        \"name\": string\n      },\n      \"unit_id\": uuid\n    }\n  ]\n}\n```\n\n#### Example\n\n```javascript\n{\n  \"total_records\": 1,\n  \"total_pages\": 1,\n  \"current_page\": 1,\n  \"records\": [\n    {\n      \"carrier\": null,\n      \"completed_at\": null,\n      \"completed_by\": null,\n      \"completed_by_id\": null,\n      \"condition\": \"good\",\n      \"created_at\": \"2024-02-15T19:08:42.433Z\",\n      \"created_by\": {\n        \"display_name\": \"Package t\",\n        \"email\": \"package@test.com\",\n        \"id\": \"634603e6-aaec-4010-ac47-465f3e9040e2\",\n        \"profile_image\": null,\n        \"resident\": false,\n        \"title\": \"Software Engineer\"\n      },\n      \"created_by_id\": \"634603e6-aaec-4010-ac47-465f3e9040e2\",\n      \"description\": null,\n      \"id\": \"9be8188e-256c-4e09-9560-a895ae35f34a\",\n      \"photos\": [],\n      \"place\": {\n        \"id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\",\n        \"name\": \"999\"\n      },\n      \"place_id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\",\n      \"status\": \"notified\",\n      \"sub_type\": \"handheld-box\",\n      \"tracking_number\": \"7895365412359875\",\n      \"unit\": {\n        \"id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\",\n        \"name\": \"999\"\n      },\n      \"unit_id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\"\n    }\n  ]\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n",
+      "qsParams": [
+        {
+          "name": "page",
+          "defaultValue": 0
+        },
+        {
+          "name": "limit",
+          "defaultValue": 100
+        }
+      ]
+    },
+    {
+      "name": "Get Package By ID",
+      "path": "/api/v2/units/:unit_id/packages/:package_id",
+      "method": "GET",
+      "documentation": "# Get Package\n\n## Endpoint\n\n`GET /api/v2/units/:unit_id/packages/:package_id`\n\n## Responses\n\n### 200 Response\n\n```javascript\n{\n    \"carrier\": string | null,\n    \"completed_at\": string | null,\n    \"completed_by\": string | null,\n    \"completed_by_id\": string | null,\n    \"condition\": string,\n    \"created_at\": datetime,\n    \"created_by\": {\n    \"display_name\": string,\n    \"email\": string,\n    \"id\": uuid,\n    \"profile_image\": string | null,\n    \"resident\": boolean,\n    \"title\": string\n    },\n    \"created_by_id\": uuid,\n    \"description\": null,\n    \"id\": uuid,\n    \"photos\": [],\n    \"place\": {\n    \"id\": uuid,\n    \"name\": string\n    },\n    \"place_id\": uuid,\n    \"status\": string,\n    \"sub_type\": string,\n    \"tracking_number\": string,\n    \"unit\": {\n    \"id\": uuid,\n    \"name\": string\n    },\n    \"unit_id\": uuid\n}\n```\n\n#### Example\n\n```javascript\n {\n    \"carrier\": null,\n    \"completed_at\": null,\n    \"completed_by\": null,\n    \"completed_by_id\": null,\n    \"condition\": \"good\",\n    \"created_at\": \"2024-02-15T19:08:42.433Z\",\n    \"created_by\": {\n    \"display_name\": \"Package t\",\n    \"email\": \"package@test.com\",\n    \"id\": \"634603e6-aaec-4010-ac47-465f3e9040e2\",\n    \"profile_image\": null,\n    \"resident\": false,\n    \"title\": \"Software Engineer\"\n    },\n    \"created_by_id\": \"634603e6-aaec-4010-ac47-465f3e9040e2\",\n    \"description\": null,\n    \"id\": \"9be8188e-256c-4e09-9560-a895ae35f34a\",\n    \"photos\": [],\n    \"place\": {\n    \"id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\",\n    \"name\": \"999\"\n    },\n    \"place_id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\",\n    \"status\": \"notified\",\n    \"sub_type\": \"handheld-box\",\n    \"tracking_number\": \"7895365412359875\",\n    \"unit\": {\n    \"id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\",\n    \"name\": \"999\"\n    },\n    \"unit_id\": \"5b5b260d-c437-48f0-ad99-7bcde7ae585b\"\n}\n```\n\n### 401 Response\n\nPlease use a valid access token in your request before continuing. This may require logging in or using your refresh token to obtain a new access token.\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"unauthorized\",\n      \"description\": \"Must include valid Authorization credentials\"\n    }\n  ]\n}\n```\n\n### 403 Response\n\nForbidden\n\n```json\n{\n  \"errors\": [\n    {\n      \"code\": \"forbidden\",\n      \"description\": \"This action is forbidden.\"\n    }\n  ]\n}\n```\n"
+    }
+  ]
+}

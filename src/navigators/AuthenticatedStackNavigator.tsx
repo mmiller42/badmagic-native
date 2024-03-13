@@ -1,15 +1,17 @@
-import React from "react";
-import {
-  NativeStackScreenProps,
-  createNativeStackNavigator,
-} from "@react-navigation/native-stack";
-import { EndpointsScreen } from "./AuthenticatedStackNavigator/EndpointsScreen";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import React from "react";
+
 import { EndpointScreen } from "./AuthenticatedStackNavigator/EndpointScreen";
+import { EndpointsScreen } from "./AuthenticatedStackNavigator/EndpointsScreen";
+import { QueryClientProvider } from "../providers/QueryClientProvider";
 
 export type AuthenticatedStackParamsList = {
   Endpoints: undefined;
-  Endpoint: undefined;
+  Endpoint: { path: string };
 };
 
 export type AuthenticatedStackScreenProps<
@@ -25,9 +27,15 @@ const { Screen, Navigator } =
 
 export function AuthenticatedStackNavigator() {
   return (
-    <Navigator initialRouteName="Endpoints">
-      <Screen name="Endpoints" component={EndpointsScreen} />
-      <Screen name="Endpoint" component={EndpointScreen} />
-    </Navigator>
+    <QueryClientProvider>
+      <Navigator initialRouteName="Endpoints">
+        <Screen
+          name="Endpoints"
+          component={EndpointsScreen}
+          options={{ headerShown: false }}
+        />
+        <Screen name="Endpoint" component={EndpointScreen} />
+      </Navigator>
+    </QueryClientProvider>
   );
 }

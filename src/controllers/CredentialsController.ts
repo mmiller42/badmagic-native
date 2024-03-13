@@ -1,20 +1,19 @@
 import mitt from "mitt";
 import {
-  ACCESSIBLE,
   ACCESS_CONTROL,
+  ACCESSIBLE,
   AUTHENTICATION_TYPE,
   getInternetCredentials,
   hasInternetCredentials,
   resetInternetCredentials,
   setInternetCredentials,
 } from "react-native-keychain";
+
 import { authenticate } from "../api/auth";
 import { authController } from "./AuthController";
 
 type Credentials = { email: string; password: string };
 const SERVER = "BADMAGIC_QA";
-
-console.log("SERVER!", SERVER);
 
 async function fetchCredentials(): Promise<Credentials | null> {
   let startedAt = Date.now();

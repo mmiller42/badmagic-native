@@ -1,131 +1,144 @@
-import { Session, refreshCredentials } from "../api/auth";
-import mitt from "mitt";
-import { Timeout } from "../utils/Timeout";
 import { isAxiosError } from "axios";
+import mitt from "mitt";
+
+import { refreshTokens, TokensResponse } from "../api/auth";
+import { Timeout } from "../utils/Timeout";
 
 const CLOCK_DRIFT_MS = 30_000;
 
-function refreshDelayTime(session: Session): number {
+function refreshDelayTime(tokens: TokensResponse): number {
   return Math.max(
-    session.access.payload.exp * 1000 - Date.now() - CLOCK_DRIFT_MS,
+    tokens.access.payload.exp * 1000 - Date.now() - CLOCK_DRIFT_MS,
     0
   );
 }
 
-function canRefresh(session: Session): boolean {
-  return session.refresh.payload.exp * 1000 - CLOCK_DRIFT_MS > Date.now();
+function canRefresh(tokens: TokensResponse): boolean {
+  return tokens.refresh.payload.exp * 1000 - CLOCK_DRIFT_MS > Date.now();
 }
 
-async function refreshTokens(session: Session): Promise<Session> {
-  try {
-    return await refreshCredentials({ token: session.refresh.token });
-  } catch (e) {
-    if (isAxiosError(e) && !e.response) {
-      console.log("offline error?", e);
-      return session;
-    }
+export class UnauthenticatedError extends Error {}
+export class AbortError extends Error {}
 
-    throw e;
-  }
-}
-
-type RefreshTokensCallback = (session: Session) => Promise<Session | null>;
-
-class UnauthenticatedError extends Error {}
-class AbortError extends Error {}
+type Session = Pick<TokensResponse, "user_id"> | null;
+type EventMap = { tokens: TokensResponse | null; session: Session | null };
 
 class AuthController {
-  readonly #emitter = mitt<{ session: Session | null }>();
-  #session: Session | null = null;
+  readonly #emitter = mitt<EventMap>();
+  #tokens: TokensResponse | null = null;
   #refreshTimeout: Timeout | null = null;
 
-  constructor(session: Session | null = null) {
-    this.updateSession(session);
+  get tokens(): TokensResponse | null {
+    return this.#tokens;
   }
 
   get session(): Session | null {
-    return this.#session;
+    return this.#tokens ? { user_id: this.#tokens.user_id } : null;
   }
 
-  subscribe(listener: (session: Session | null) => void): () => void {
-    this.#emitter.on("session", listener);
+  subscribe<TEvent extends keyof EventMap>(
+    event: TEvent,
+    listener: (data: EventMap[TEvent]) => void
+  ): () => void {
+    this.#emitter.on(event, listener);
 
     return () => {
-      this.#emitter.off("session", listener);
+      this.#emitter.off(event, listener);
     };
   }
 
   async accessToken(
     signal?: AbortSignal | undefined
-  ): Promise<Session["access"]> {
-    if (this.#session && refreshDelayTime(this.#session) > 0) {
-      return this.#session.access;
+  ): Promise<TokensResponse["access"]> {
+    if (signal?.aborted) {
+      throw new AbortError();
     }
 
-    return new Promise<Session["access"]>((resolve, reject) => {
+    if (this.#tokens && refreshDelayTime(this.#tokens) > 0) {
+      return this.#tokens.access;
+    }
+
+    return new Promise<TokensResponse["access"]>((resolve, reject) => {
       if (signal?.aborted) {
         reject(new AbortError());
         return;
       }
 
-      const handleSession = (session: Session | null): void => {
-        if (session) {
-          resolve(session.access);
+      const handleTokens = (tokens: TokensResponse | null): void => {
+        if (tokens) {
+          resolve(tokens.access);
         } else {
           reject(new UnauthenticatedError());
         }
 
-        this.#emitter.off("session", handleSession);
+        unsubscribe();
       };
 
-      this.#emitter.on("session", handleSession);
+      const unsubscribe = this.subscribe("tokens", handleTokens);
 
-      signal?.addEventListener("abort", () => {
-        this.#emitter.off("session", handleSession);
-      });
+      signal?.addEventListener("abort", unsubscribe);
     });
   }
 
-  updateSession(session: Session | null): void {
+  updateSession(tokens: TokensResponse | null): void {
     if (
-      session === this.#session ||
-      (session &&
-        this.#session &&
-        session.access.payload.iat <= this.#session.access.payload.iat)
+      tokens === this.#tokens ||
+      (tokens &&
+        this.#tokens &&
+        tokens.access.payload.iat <= this.#tokens.access.payload.iat)
     ) {
       return;
     }
 
-    const current = this.#session;
-    this.#session = session;
+    const current = this.#tokens;
+    this.#tokens = tokens;
     this.#refreshTimeout?.abort();
 
-    if (session) {
-      const delay = refreshDelayTime(session);
+    if (tokens) {
+      const delay = refreshDelayTime(tokens);
       console.log("Scheduling refreshing for ", delay, "ms");
       this.#refreshTimeout = new Timeout(() => this.#refresh(), delay);
     }
 
-    if (session ? current?.user_id !== session.user_id : current) {
-      this.#emitter.emit("session", session);
+    if (
+      (!current && tokens) ||
+      (current && !tokens) ||
+      (current && tokens && current.user_id !== tokens.user_id)
+    ) {
+      this.#emitter.emit(
+        "session",
+        tokens ? { user_id: tokens.user_id } : null
+      );
     }
+
+    this.#emitter.emit("tokens", tokens);
   }
 
   #refresh(): void {
-    if (!this.#session) {
+    const tokens = this.#tokens;
+
+    if (!tokens) {
       return;
     }
 
-    if (canRefresh(this.#session)) {
-      refreshTokens(this.#session).then(
-        (session) => {
-          this.updateSession(session);
-        },
-        (e) => {
-          console.log("refresh error:", e);
-          this.updateSession(null);
-        }
-      );
+    if (canRefresh(tokens)) {
+      refreshTokens({ token: tokens.refresh.token })
+        .catch((e) => {
+          if (isAxiosError(e) && !e.response) {
+            console.log("offline?", e);
+            return tokens;
+          }
+          throw e;
+        })
+        .then(
+          (tokens) => {
+            this.updateSession(tokens);
+          },
+          (e) => {
+            console.log("refresh error:", e);
+            this.updateSession(null);
+          }
+        );
     } else {
       console.log("refresh token is too old to refresh");
       this.updateSession(null);

@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import {
-  NativeStackScreenProps,
   createNativeStackNavigator,
+  NativeStackScreenProps,
 } from "@react-navigation/native-stack";
-import {
-  LoginParamsList,
-  LoginScreen,
-} from "./UnauthenticatedStackNavigator/LoginScreen";
+import React, { useEffect, useState } from "react";
+
+import { authController } from "../controllers/AuthController";
+import { AuthenticatedStackNavigator } from "./AuthenticatedStackNavigator";
 import {
   EndpointsParamsList,
   EndpointsScreen,
 } from "./AuthenticatedStackNavigator/EndpointsScreen";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AuthenticatedStackNavigator } from "./AuthenticatedStackNavigator";
 import { UnauthenticatedStackNavigator } from "./UnauthenticatedStackNavigator";
-import { authController } from "../controllers/AuthController";
+import {
+  LoginParamsList,
+  LoginScreen,
+} from "./UnauthenticatedStackNavigator/LoginScreen";
 
 export type RootStackParamsList = {
   AuthenticatedStack: undefined;
@@ -28,7 +29,7 @@ export function RootStackNavigator() {
   const [session, setSession] = useState(authController.session);
 
   useEffect(() => {
-    return authController.subscribe(setSession);
+    return authController.subscribe("session", setSession);
   }, []);
 
   useEffect(() => {

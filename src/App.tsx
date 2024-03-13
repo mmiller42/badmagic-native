@@ -5,15 +5,16 @@
  * @format
  */
 
-import React from "react";
 import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
 } from "@react-navigation/native";
-import { RootStackNavigator } from "./navigators/RootStackNavigator";
+import React from "react";
 import { useColorScheme } from "react-native";
+
 import { credentialsController } from "./controllers/CredentialsController";
+import { RootStackNavigator } from "./navigators/RootStackNavigator";
 
 credentialsController.initialize();
 

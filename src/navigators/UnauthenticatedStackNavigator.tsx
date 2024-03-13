@@ -1,10 +1,11 @@
-import React from "react";
-import {
-  NativeStackScreenProps,
-  createNativeStackNavigator,
-} from "@react-navigation/native-stack";
-import { LoginScreen } from "./UnauthenticatedStackNavigator/LoginScreen";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import React from "react";
+
+import { LoginScreen } from "./UnauthenticatedStackNavigator/LoginScreen";
 
 export type UnauthenticatedStackParamsList = {
   Login: undefined;

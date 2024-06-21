@@ -150,10 +150,6 @@ function handleAuthenticateError(
   if (isAxiosError(error) && error.response) {
     switch (error.response.status) {
       case 401:
-        console.log({
-          mfaRequest,
-          desc: error.response.data?.errors?.[0]?.description,
-        });
         if (
           mfaRequest &&
           error.response.data?.errors?.[0]?.description === "Invalid code"

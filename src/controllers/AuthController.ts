@@ -27,15 +27,15 @@ type EventMap = { tokens: TokensResponse | null; session: Session | null };
 
 class AuthController {
   readonly #emitter = mitt<EventMap>();
-  #tokens: TokensResponse | null = null;
+  #tokens: TokensResponse | null | undefined = undefined;
   #refreshTimeout: Timeout | null = null;
 
-  get tokens(): TokensResponse | null {
+  get tokens(): TokensResponse | null | undefined {
     return this.#tokens;
   }
 
-  get session(): Session | null {
-    return this.#tokens ? { user_id: this.#tokens.user_id } : null;
+  get session(): Session | null | undefined {
+    return this.#tokens && { user_id: this.#tokens.user_id };
   }
 
   subscribe<TEvent extends keyof EventMap>(
@@ -108,6 +108,7 @@ class AuthController {
     }
 
     if (
+      current === undefined ||
       (!current && tokens) ||
       (current && !tokens) ||
       (current && tokens && current.user_id !== tokens.user_id)

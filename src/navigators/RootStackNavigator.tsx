@@ -24,7 +24,7 @@ export function RootStackNavigator() {
     console.log("session:", session);
   }, [session]);
 
-  return (
+  return session === undefined ? null : (
     <Navigator initialRouteName="UnauthenticatedStack">
       <Group screenOptions={{ headerShown: false }}>
         {session ? (

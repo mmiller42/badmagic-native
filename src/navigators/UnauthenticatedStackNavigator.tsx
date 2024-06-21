@@ -27,7 +27,11 @@ const { Screen, Navigator } =
 export function UnauthenticatedStackNavigator() {
   return (
     <Navigator initialRouteName="Login">
-      <Screen name="Login" component={LoginScreen} />
+      <Screen
+        name="Login"
+        options={{ title: "😈🔮 Bad Magic" }}
+        component={LoginScreen}
+      />
       <Screen name="MultiFactor" component={MultiFactorScreen} />
     </Navigator>
   );

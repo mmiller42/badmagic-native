@@ -64,7 +64,7 @@ export function routeToUri(
     )
     .join("&");
   return (
-    path.replaceAll(/:(\w+)/g, (_, param) => params[param]) +
+    path.replaceAll(/:(\w+)/g, (_, param) => params[param] || `:${param}`) +
     (qs ? `?${qs}` : "")
   );
 }

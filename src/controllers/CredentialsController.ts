@@ -1,80 +1,29 @@
 import mitt from "mitt";
-import {
-  ACCESS_CONTROL,
-  ACCESSIBLE,
-  AUTHENTICATION_TYPE,
-  getInternetCredentials,
-  hasInternetCredentials,
-  resetInternetCredentials,
-  setInternetCredentials,
-} from "react-native-keychain";
 
-import { authenticate } from "../api/auth";
+import { authenticate, RequestOptions } from "../api/auth";
+import {
+  getCredentials,
+  putCredentials as _putCredentials,
+  resetCredentials,
+} from "../modules/keychain";
 import { authController } from "./AuthController";
 
 type Credentials = { email: string; password: string };
 const SERVER = "BADMAGIC_QA";
 
 async function fetchCredentials(): Promise<Credentials | null> {
-  let startedAt = Date.now();
-  console.log("fetching at", new Date());
-
-  try {
-    if (!(await hasInternetCredentials(SERVER))) {
-      console.log("no creds after", Date.now() - startedAt, "ms");
-      return null;
-    }
-
-    console.log("hasCreds=true after", Date.now() - startedAt, "ms");
-    const credentials = await getInternetCredentials(SERVER);
-    console.log(
-      "got creds=",
-      !!credentials,
-      "after",
-      Date.now() - startedAt,
-      "ms"
-    );
-    return credentials
-      ? (JSON.parse(credentials.password) as Credentials)
-      : null;
-  } catch (e) {
-    console.log("fetchCredentials error:", e);
-
-    try {
-      await resetInternetCredentials(SERVER);
-    } catch (e) {
-      console.log("failed to reset:", e);
-    }
-
-    return null;
-  }
+  const credentials = await getCredentials(SERVER);
+  console.log("got creds=", !!credentials);
+  return credentials
+    ? { email: credentials.username, password: credentials.password }
+    : null;
 }
 
 async function putCredentials(credentials: Credentials | null): Promise<void> {
-  try {
-    await getInternetCredentials(SERVER);
-  } catch (e) {
-    console.log("getInternetCredentials error:", e);
-    throw new Error("failed prompt");
-  }
-
-  try {
-    if (!credentials) {
-      await resetInternetCredentials(SERVER);
-    } else {
-      await setInternetCredentials(
-        SERVER,
-        SERVER,
-        JSON.stringify(credentials),
-        {
-          accessControl: ACCESS_CONTROL.DEVICE_PASSCODE,
-          accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-          authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-        }
-      );
-    }
-  } catch (e) {
-    console.log("putCredentials error:", e);
+  if (credentials) {
+    await _putCredentials(SERVER, credentials.email, credentials.password);
+  } else {
+    await resetCredentials(SERVER);
   }
 }
 
@@ -114,14 +63,18 @@ class CredentialsController {
     };
   }
 
-  // throws if creds are bad! which is good!
-  async initialize(): Promise<void> {
-    const credentials = await fetchCredentials();
-
-    if (credentials) {
-      const session = await authenticate(credentials);
-      authController.updateSession(session);
+  async unlock(options?: RequestOptions): Promise<void> {
+    let credentials: Credentials | null;
+    try {
+      credentials = await fetchCredentials();
+    } catch {
+      credentials = null;
     }
+
+    const session = credentials
+      ? await authenticate(credentials, options)
+      : null;
+    authController.updateSession(session);
 
     this.#credentials = credentials;
     this.#emitter.emit("credentials", credentials);

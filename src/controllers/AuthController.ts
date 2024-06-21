@@ -2,7 +2,9 @@ import { isAxiosError } from "axios";
 import mitt from "mitt";
 
 import { refreshTokens, TokensResponse } from "../api/auth";
+import { getSecureItem } from "../modules/keychain";
 import { Timeout } from "../utils/Timeout";
+import { credentialsController } from "./CredentialsController";
 
 const CLOCK_DRIFT_MS = 30_000;
 
@@ -96,7 +98,12 @@ class AuthController {
 
     if (tokens) {
       const delay = refreshDelayTime(tokens);
-      console.log("Scheduling refreshing for ", delay, "ms");
+      console.log(
+        "Scheduling refreshing for ",
+        delay,
+        "ms",
+        `(at ${new Date(Date.now() + delay).toLocaleTimeString()})`
+      );
       this.#refreshTimeout = new Timeout(() => this.#refresh(), delay);
     }
 
@@ -141,7 +148,18 @@ class AuthController {
         );
     } else {
       console.log("refresh token is too old to refresh");
-      this.updateSession(null);
+      credentialsController.unlock();
+    }
+  }
+
+  async initialize(): Promise<void> {
+    const tokens = await getSecureItem<TokensResponse>("oauthTokens");
+    console.log({ tokens, canRefresh: tokens && canRefresh(tokens) });
+
+    if (tokens && canRefresh(tokens)) {
+      this.updateSession(tokens);
+    } else {
+      await credentialsController.unlock();
     }
   }
 }

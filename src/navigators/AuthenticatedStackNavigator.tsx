@@ -5,13 +5,18 @@ import {
 } from "@react-navigation/native-stack";
 import React from "react";
 
-import { QueryClientProvider } from "../providers/QueryClientProvider";
+import {
+  ApiQueryKey,
+  QueryClientProvider,
+} from "../providers/QueryClientProvider";
 import { EndpointScreen } from "./AuthenticatedStackNavigator/EndpointScreen";
 import { EndpointsScreen } from "./AuthenticatedStackNavigator/EndpointsScreen";
+import { ResultScreen } from "./AuthenticatedStackNavigator/ResultScreen";
 
 export type AuthenticatedStackParamsList = {
   Endpoints: undefined;
   Endpoint: { path: string };
+  Result: { queryKey: ApiQueryKey };
 };
 
 export type AuthenticatedStackScreenProps<
@@ -35,6 +40,7 @@ export function AuthenticatedStackNavigator() {
           options={{ headerShown: false }}
         />
         <Screen name="Endpoint" component={EndpointScreen} />
+        <Screen name="Result" component={ResultScreen} />
       </Navigator>
     </QueryClientProvider>
   );

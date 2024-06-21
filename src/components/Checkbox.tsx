@@ -25,7 +25,7 @@ export function Checkbox({
         <Button
           title={checked ? "☒" : "☐"}
           onPress={() => onChangeChecked(!checked)}
-          color="#222"
+          color="#aaa"
         />
       </View>
       <TouchableOpacity

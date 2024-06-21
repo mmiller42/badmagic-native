@@ -16,12 +16,14 @@ import { Checkbox } from "../../components/Checkbox";
 import { Pill } from "../../components/Pill";
 import { Route, workspace } from "../../utils/badmagic";
 import { AuthenticatedStackParamsList } from "../AuthenticatedStackNavigator";
+import { credentialsController } from "../../controllers/CredentialsController";
+import { authController } from "../../controllers/AuthController";
 
-const allParams = new Set();
-workspace.routes.forEach((route) => {
-  route.routeParams.forEach((param) => allParams.add(param.name));
-});
-console.log(allParams);
+// const allParams = new Set();
+// workspace.routes.forEach((route) => {
+//   route.routeParams.forEach((param) => allParams.add(param.name));
+// });
+// console.log(allParams);
 
 const activeRoutes = workspace.routes.filter((route) => !route.deprecated);
 
@@ -45,13 +47,13 @@ export function EndpointsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ gap: 16, padding: 16, backgroundColor: "#222" }}>
+      <View style={{ gap: 16, padding: 16, backgroundColor: "#ccc" }}>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
             gap: 4,
-            borderColor: "#000",
+            borderColor: "#aaa",
             borderWidth: 1,
           }}
         >
@@ -64,7 +66,7 @@ export function EndpointsScreen() {
             />
           </View>
           <View>
-            <Button title="ⓧ" onPress={() => setSearch("")} color="#222" />
+            <Button title="ⓧ" onPress={() => setSearch("")} color="#aaa" />
           </View>
         </View>
         <Checkbox checked={deprecated} onChangeChecked={setDeprecated}>
@@ -78,7 +80,10 @@ export function EndpointsScreen() {
       />
       <Button
         title="Log Out"
-        onPress={() => resetInternetCredentials("BADMAGIC_QA")}
+        onPress={async () => {
+          await credentialsController.updateCredentials(null);
+          authController.updateSession(null);
+        }}
       />
     </SafeAreaView>
   );

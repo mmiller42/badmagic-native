@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import {
@@ -13,8 +12,10 @@ import { AppState } from "react-native";
 
 import pkg from "../../package.json";
 import { authController } from "../controllers/AuthController";
+import AsyncStorage from "../modules/asyncStorage";
 import { authenticated } from "../utils/axios";
 import { routeToUri } from "../utils/badmagic";
+import { isAxiosError } from "axios";
 
 export type ApiQueryKey<
   TRoute extends string = string,
@@ -41,6 +42,18 @@ export const queryClient = new QueryClient({
           routeToUri(route, routeParams, queryParams)
         );
         return response.data;
+      },
+      retry: (failureCount, error) => {
+        if (
+          isAxiosError(error) &&
+          error.response &&
+          error.response.status >= 400 &&
+          error.response.status < 500
+        ) {
+          return false;
+        }
+
+        return failureCount < 3;
       },
     },
   },

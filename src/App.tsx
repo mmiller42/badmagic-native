@@ -13,10 +13,10 @@ import {
 import React from "react";
 import { useColorScheme } from "react-native";
 
-import { credentialsController } from "./controllers/CredentialsController";
+import { authController } from "./controllers/AuthController";
 import { RootStackNavigator } from "./navigators/RootStackNavigator";
 
-credentialsController.initialize();
+authController.initialize();
 
 export function App() {
   const scheme = useColorScheme();

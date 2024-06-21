@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, {
   Dispatch,
   SetStateAction,
@@ -8,9 +9,12 @@ import React, {
 } from "react";
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
-import { ApiQueryKey } from "../../providers/QueryClientProvider";
 import { Param, routeToUri, workspace } from "../../utils/badmagic";
-import { AuthenticatedStackScreenProps } from "../AuthenticatedStackNavigator";
+import {
+  AuthenticatedStackParamsList,
+  AuthenticatedStackScreenProps,
+} from "../AuthenticatedStackNavigator";
+import { useBadMagicRoute, useBadMagicUri } from "../../hooks/badmagic";
 
 type Params = Record<string, string>;
 
@@ -18,11 +22,10 @@ export function EndpointScreen({
   navigation,
   route: { params },
 }: AuthenticatedStackScreenProps<"Endpoint">) {
-  const route = useMemo(() => {
-    return workspace.routes.find((route) => route.path === params.path);
-  }, [params.path]);
+  const { navigate } =
+    useNavigation<NativeStackNavigationProp<AuthenticatedStackParamsList>>();
 
-  console.log(route);
+  const route = useBadMagicRoute(params.path);
 
   useEffect(() => {
     if (route) {
@@ -47,21 +50,11 @@ export function EndpointScreen({
     )
   );
 
-  const uri = useMemo(
-    () => (route?.path ? routeToUri(route.path, routeParams, qsParams) : ""),
-    [route?.path, routeParams, qsParams]
-  );
-
-  const [queryKey, setQueryKey] = useState<ApiQueryKey | null>(null);
-  const query = useQuery({ queryKey: queryKey!, enabled: queryKey !== null });
+  const uri = useBadMagicUri(route, routeParams, qsParams);
 
   const disabled = useMemo(
     () => Object.values(routeParams).some((param) => !param.trim()),
     [routeParams]
-  );
-  const json = useMemo(
-    () => (query.data ? JSON.stringify(query.data, null, 2) : null),
-    [query.data]
   );
 
   return !route ? null : (
@@ -90,16 +83,15 @@ export function EndpointScreen({
               />
             ))}
           </View>
-          {query.data ? (
-            <Text style={{ fontFamily: "monospace" }}>{json}</Text>
-          ) : null}
         </View>
       </ScrollView>
       <View>
         <Button
           title="Submit"
           onPress={() => {
-            setQueryKey([route.path, routeParams, qsParams]);
+            navigate("Result", {
+              queryKey: [route.path, routeParams, qsParams],
+            });
           }}
           disabled={disabled}
         />

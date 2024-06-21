@@ -6,9 +6,11 @@ import {
 import React from "react";
 
 import { LoginScreen } from "./UnauthenticatedStackNavigator/LoginScreen";
+import { MultiFactorScreen } from "./UnauthenticatedStackNavigator/MultiFactorScreen";
 
 export type UnauthenticatedStackParamsList = {
   Login: undefined;
+  MultiFactor: undefined;
 };
 
 export type UnauthenticatedStackScreenProps<
@@ -26,6 +28,7 @@ export function UnauthenticatedStackNavigator() {
   return (
     <Navigator initialRouteName="Login">
       <Screen name="Login" component={LoginScreen} />
+      <Screen name="MultiFactor" component={MultiFactorScreen} />
     </Navigator>
   );
 }
